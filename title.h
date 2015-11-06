@@ -1,9 +1,11 @@
 #pragma once
 
-#define TITLE_NOINPUT (0)
-#define TITLE_START_GAME (1)
-#define TITLE_TOGGLE_SOUND (2)
-#define TITLE_DISP_RANKING (3)
+enum {
+  TITLE_NOINPUT = 0,
+  TITLE_START_GAME,
+  TITLE_TOGGLE_SOUND,
+  TITLE_DISP_RANKING,
+};
 
 struct GameCore;
 

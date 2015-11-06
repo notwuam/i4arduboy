@@ -10,3 +10,7 @@
 
 #define START_LIVES (2)
 #define ARMER_FRAMES (90)
+
+#define BULLET_TYPE0_SPD (3.f)
+#define BULLET_TYPE1_SPD (1.f)
+

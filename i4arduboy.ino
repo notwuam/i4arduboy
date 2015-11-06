@@ -6,12 +6,16 @@
 #include "context.h"
 #include "title.h"
 
+enum {
+  SCENE_TITLE = 0,
+  SCENE_GAME,
+};
+
 GameCore core;
 Title title;
 Context context(core);
 
 unsigned char scene = 0;
-bool prevEnterButton = true;
 
 void setup() {
   Serial.begin(9600);
@@ -26,11 +30,11 @@ void loop() {
   core.clearDisplay();
 
   switch(scene) {
-    case 0:
+    case SCENE_TITLE:
       switch(title.loop(core)) {
         case TITLE_START_GAME:
           context.initialize();
-          scene = 1;
+          scene = SCENE_GAME;
           break;
 
         default: break;
@@ -39,7 +43,7 @@ void loop() {
     
     default:
       if(context.loop()) {
-        scene = 0;
+        scene = SCENE_TITLE;
       }
       break;
   }

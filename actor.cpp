@@ -83,8 +83,11 @@ void Submarine::draw(Context& context) {
   //context.getArduboy().drawRect(x, y, W, H, 0);
 }
 
-void Submarine::onHit() {
+void Submarine::onHit(Context& context) {
   if(armer <= 0) {
+    if(extraLives >= 0) {
+      context.spawnParticle(x - 2, y - 2, 0);
+    }
     --extraLives;
     armer = ARMER_FRAMES;
   }
@@ -154,7 +157,7 @@ void BigEnemy::move(Context& context) {
   // firing bullet
   if(context.frameCount() % 150 == 0) {
     const float by = y +  bitmapCruEnemy0[1]/2;
-    context.fireBullet(x, by, context.getSubmarineAngle(x, by), 0);
+    context.fireBullet(x, by, context.getFutureSubmarineAngle(x, by, BULLET_TYPE0_SPD), 0);
   }
 }
 
@@ -179,7 +182,7 @@ void Bullet::initialize(float sx, float sy, float radian, unsigned char type) {
 }
 
 void Bullet::move(Context& context) {
-  const float speed = type == 0 ? 3.f : 1.f;
+  const float speed = (type == 0 ? BULLET_TYPE0_SPD : BULLET_TYPE1_SPD);
   x += speed * cos(angle);
   y += speed * sin(angle);
 

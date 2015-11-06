@@ -31,7 +31,7 @@ struct Submarine : public Actor {
   void initialize();
   void move(Context& context);
   void draw(Context& context);
-  void onHit();
+  void onHit(Context& context);
 };
 
 struct Torpedo : public Actor {

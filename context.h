@@ -46,6 +46,10 @@ struct Context {
     }
   }
   void moveAll() {
+    // to forecast the position of submarine
+    prevSubmarineX = submarine.x;
+    prevSubmarineY = submarine.y;
+    
     submarine.move(*this);
     echo.reset(*this, submarine.x);
     torpedo.move(*this);
@@ -82,7 +86,7 @@ struct Context {
       if(!bullets[i].exist()) { continue; }
       if(Collision(bullets[i].x, bullets[i].y, bullets[i].W, bullets[i].H, submarine.x, submarine.y, submarine.W, submarine.H)) {
         bullets[i].onHit(*this);
-        submarine.onHit();
+        submarine.onHit(*this);
       }
     }
   }
@@ -110,6 +114,21 @@ struct Context {
   }
   float getSubmarineAngle(const float bx, const float by) const {
     return atan2(submarine.y - by, submarine.x - bx);
+  }
+  // FromX, FromY, BulletSpeed
+  float getFutureSubmarineAngle(const float fx, const float fy, const float bs) const {
+    const float tx = submarine.x;             // ToX (or TargetX)
+    const float ty = submarine.y;             // ToY
+    const float vx = tx - prevSubmarineX;     // VelocityX (of submarine)
+    const float vy = ty - prevSubmarineY;     // VelocityY
+    const float dr = atan2(ty - fy, tx - fx); // DiRection (to submarine)
+    
+    const float ds = (tx - fx) * (tx - fx) + (ty - fy) * (ty - fy); // SquareDistance
+    const float rt = sqrt(ds) / bs;           // ReachTime
+    
+    const float px = vx * rt + tx;            // PredictedX (of future submarine)
+    const float py = vy * rt + ty;            // PredictedY
+    return atan2(py - fy, px - fx);
   }
 
   // spawn characters
@@ -163,10 +182,12 @@ struct Context {
   
   Submarine submarine;
   Torpedo torpedo;
+  
   BigEnemy bigEnemies[BIG_ENEMY_MAX];
   Bullet bullets[BULLET_MAX];
   Particle particles[PARTICLE_MAX];
 
   long frames;
+  float prevSubmarineX, prevSubmarineY;
 };
 
