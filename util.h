@@ -7,6 +7,6 @@ bool Collision(
 
 float Clamp(const float value, const float min, const float max);
 
-void DrawWave(GameCore& core, const int beginX, const long frameCount);
+void DrawWave(GameCore& core, const int beginX, const unsigned long frameCount);
 void DrawBottom(GameCore& core, const int beginX);
 

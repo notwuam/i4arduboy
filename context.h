@@ -16,7 +16,7 @@ struct Context {
   Context(GameCore& core) : core(core) {
   }
   
-  inline long frameCount() const { return frames; }
+  inline unsigned long frameCount() const { return frames; }
   inline void setGameover() {
     if(gameoverCount < 0) {
       gameoverCount = 0;
@@ -218,7 +218,7 @@ struct Context {
   Bullet   bullets[BULLET_MAX];
   Particle particles[PARTICLE_MAX];
 
-  long  frames;
+  unsigned long frames;
   float prevSubmarineX, prevSubmarineY;
   int   gameoverCount;
 };

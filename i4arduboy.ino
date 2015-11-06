@@ -48,9 +48,9 @@ void loop() {
       break;
   }
   
-/*
+  /*
   char text[16];
-  sprintf(text, "%d, %d, %d", bitmapShockwave1, bitmapShockwave1[0], bitmapShockwave1[1]);
+  sprintf(text, "%d", core.frameCount());
   core.setCursor(10, 10);
   core.print(text);
   */

@@ -16,7 +16,7 @@ float Clamp(const float value, const float min, const float max) {
   return value;
 }
 
-void DrawWave(GameCore& core, const int beginX, const long frameCount) {
+void DrawWave(GameCore& core, const int beginX, const unsigned long frameCount) {
   const unsigned char* bitmaps[] = {bitmapWave0, bitmapWave1, bitmapWave2, bitmapWave3};
   const int w = bitmapWave0[0];
   const int x = beginX % (w * 4);
