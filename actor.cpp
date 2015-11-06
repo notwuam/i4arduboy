@@ -98,7 +98,7 @@ void Torpedo::initialize() {
   inactivate();
 }
 
-bool Torpedo::tryLaunch(float sx, float sy) {
+bool Torpedo::tryLaunch(const float sx, const float sy) {
   if(!exist()) {
     activate(sx, sy);
     vx = 0.f;
@@ -137,7 +137,7 @@ void Torpedo::draw(Context& context) {
 
 // === BigEnemy ===
 
-void BigEnemy::initialize(float y) {
+void BigEnemy::initialize(const float y) {
   activate(FIELD_WIDTH, y);
   grazed = false;
   timer  = 0;
@@ -174,7 +174,7 @@ void BigEnemy::onHit(Context& context) {
 
 // === Bullet ===
 
-void Bullet::initialize(float sx, float sy, float radian, unsigned char type) {
+void Bullet::initialize(const float sx, const float sy, const float radian, const unsigned char type) {
   activate(sx, sy);
   angle = radian;
   this->type = type;
@@ -188,7 +188,7 @@ void Bullet::move(Context& context) {
   // frame out
   static const int MARGIN = 4;
   if(
-    x < -MARGIN || x > SCREEN_WIDTH + MARGIN ||
+    x < -MARGIN || x > SCREEN_WIDTH  + MARGIN ||
     y < -MARGIN || y > SCREEN_HEIGHT + MARGIN
   ) {
     inactivate();  
@@ -217,7 +217,7 @@ void Bullet::onHit(Context& context) {
 
 // === Particle ===
 
-void Particle::initialize(float x, float y, unsigned char type) {
+void Particle::initialize(const float x, const float y, const unsigned char type) {
   if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
   activate(x, y);
   this->type;

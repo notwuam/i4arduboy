@@ -113,7 +113,7 @@ struct Context {
     core.print(text);
   }
 
-  void addEcho(float left, float top, float bottom) {
+  void addEcho(const float left, const float top, const float bottom) {
     echo.add(left, top, bottom);
   }
   float getSubmarineAngle(const float bx, const float by) const {
@@ -136,10 +136,10 @@ struct Context {
   }
 
   // spawn characters
-  bool tryLaunchTorpedo(float sx, float sy) {
+  bool tryLaunchTorpedo(const float sx, const float sy) {
     torpedo.tryLaunch(sx, sy);
   }
-  void spawnBigEnemy(float y) {
+  void spawnBigEnemy(const float y) {
     for(int i = 0; i < BIG_ENEMY_MAX; ++i) {
       if(!bigEnemies[i].exist()) {
         bigEnemies[i].initialize(y);
@@ -147,7 +147,7 @@ struct Context {
       }
     }
   }
-  void fireBullet(float sx, float sy, float radian, unsigned char type) {
+  void fireBullet(const float sx, const float sy, const float radian, const unsigned char type) {
     for(int i = 0; i < BULLET_MAX; ++i) {
       if(!bullets[i].exist()) {
         bullets[i].initialize(sx, sy, radian, type);
@@ -155,7 +155,7 @@ struct Context {
       }
     }
   }
-  void spawnParticle(float x, float y, unsigned char type) {
+  void spawnParticle(const float x, const float y, const unsigned char type) {
     for(int i = 0; i < PARTICLE_MAX; ++i) {
       if(!particles[i].exist()) {
         particles[i].initialize(x, y, type);

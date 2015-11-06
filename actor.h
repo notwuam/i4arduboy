@@ -8,7 +8,7 @@ struct Actor {
   float x = EXIST_THRESHOLD;
   float y;
 
-  void activate(float x, float y) {
+  void activate(const float x, const float y) {
     this->x = x;
     this->y = y;
   }
@@ -41,7 +41,7 @@ struct Torpedo : public Actor {
   float vx;
 
   void initialize();
-  bool tryLaunch(float sx, float sy);
+  bool tryLaunch(const float sx, const float sy);
   void move(Context& context);
   void draw(Context& context);
   void onHit() {
@@ -56,7 +56,7 @@ struct BigEnemy : public Actor {
   bool grazed;
   unsigned char timer;
 
-  void initialize(float y);
+  void initialize(const float y);
   void move(Context& context);
   void draw(Context& context);
   void onHit(Context& context);
@@ -70,7 +70,7 @@ struct Bullet : public Actor {
   float angle;
   unsigned char type;
   
-  void initialize(float sx, float sy, float radian, unsigned char type);
+  void initialize(const float sx, const float sy, const float radian, const unsigned char type);
   void move(Context& context);
   void draw(Context& context);
   void onHit(Context& context);
@@ -80,7 +80,7 @@ struct Particle : public Actor {
   unsigned char type;
   unsigned char limit;
 
-  void initialize(float x, float y, unsigned char type);
+  void initialize(const float x, const float y, const unsigned char type);
   void move(Context& context);
   void draw(Context& context);
 };
