@@ -144,20 +144,32 @@ void BigEnemy::initialize(const float y) {
 }
 
 void BigEnemy::move(Context& context) {
+  // moving
   static const float NORMAL_SPD = -0.2f;
-  
-  x += NORMAL_SPD * (grazed && x > SCREEN_WIDTH - 5 ? 16.f : 1.f);
+  if(grazed && x > SCREEN_WIDTH - 5) {
+    x += NORMAL_SPD * 16.f; // submarine found
+  }
+  else {
+    x += NORMAL_SPD;
+  }
+
+  // frame out
   if(x + bitmapCruEnemy0[0] < 0.f) {
     inactivate();
   }
 
+  // setting sonar reaction
   context.addEcho(x, y, y+H);
 
   // firing bullet
-  if(context.frameCount() % 150 == 0) {
+  if(timer == 0) {
     const float by = y +  bitmapCruEnemy0[1]/2;
     context.fireBullet(x, by, context.getFutureSubmarineAngle(x, by, BULLET_TYPE0_SPD), 0);
   }
+
+  // updating timer
+  static const unsigned char PERIOD = 150;
+  timer = (timer + 1) % PERIOD;
 }
 
 void BigEnemy::draw(Context& context) {
@@ -167,8 +179,8 @@ void BigEnemy::draw(Context& context) {
 
 void BigEnemy::onHit(Context& context) {
   context.spawnParticle(x, y, 0);
-  inactivate();
   context.core.playScore(bing);
+  inactivate();
 }
 
 
