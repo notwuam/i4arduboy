@@ -26,7 +26,7 @@ void Echo::add(float left, float top, float bottom) {
   
   for(int i = b; i <= e; ++i) {
     if(newInte > intensities[i]) {
-      intensities[i] = newInte;
+      intensities[i] = newInte; // update
     }
   }
 }

@@ -9,13 +9,13 @@
 
 void Submarine::initialize() {
   activate(W, SCREEN_HEIGHT / 2.f);
-  prevFire = true;  // to prevent from launching a torpedo
+  prevFire   = true;  // to prevent from launching a torpedo
   extraLives = START_LIVES;
-  armer = ARMER_FRAMES;
+  armer      = ARMER_FRAMES;
 }
 
 void Submarine::move(Context& context) {
-  static const float SPD = 0.5f;
+  static const float SPD   = 0.5f;
   static const float SQRT2 = 0.7071067811f;
   
   // control
@@ -50,10 +50,8 @@ void Submarine::move(Context& context) {
 
   // clamping into field
   static const int MARGIN = 6;
-  if(x + W/2.f < MARGIN) { x = MARGIN - W/2.f; }
-  if(y + H/2.f < MARGIN) { y = MARGIN - H/2.f; }
-  if(x + W/2.f > SCREEN_WIDTH  - MARGIN) { x = SCREEN_WIDTH  - MARGIN - W/2.f; }
-  if(y + H/2.f > SCREEN_HEIGHT - MARGIN) { y = SCREEN_HEIGHT - MARGIN - H/2.f; }
+  x = Clamp(x, MARGIN - W / 2.f, SCREEN_WIDTH  - MARGIN - W / 2.f);
+  y = Clamp(y, MARGIN - H / 2.f, SCREEN_HEIGHT - MARGIN - H / 2.f);
 
   // launching torpedo
   if(extraLives >= 0 && (context.core.pressed(BTN_A) || context.core.pressed(BTN_B))) {
@@ -115,7 +113,7 @@ void Torpedo::move(Context& context) {
   
   if(!exist()) { return; }
   vx += ACC - RSS * vx;
-  x += vx;
+  x  += vx;
   if(x >= FIELD_WIDTH) {
     inactivate();
   }
@@ -142,6 +140,7 @@ void Torpedo::draw(Context& context) {
 void BigEnemy::initialize(float y) {
   activate(FIELD_WIDTH, y);
   grazed = false;
+  timer  = 0;
 }
 
 void BigEnemy::move(Context& context) {
@@ -197,21 +196,16 @@ void Bullet::move(Context& context) {
 }
 
 void Bullet::draw(Context& context) {
+  // ToDo: async animation (if there are enough memories)
+  const int frame = context.frameCount() / 3 % 2;
+  
   if(type == 0) {
-    if(context.frameCount() / 3 % 2 == 0) {
-      context.core.drawBitmap(x - bitmapMbullet0[0]/2, y - bitmapMbullet0[1]/2, bitmapMbullet0, 2);
-    }
-    else {
-      context.core.drawBitmap(x - bitmapMbullet1[0]/2, y - bitmapMbullet1[1]/2, bitmapMbullet1, 2);
-    }
+    const unsigned char* bitmaps[] = {bitmapMbullet0, bitmapMbullet1};
+    context.core.drawBitmap(x - bitmapMbullet0[0]/2, y - bitmapMbullet0[1]/2, bitmaps[frame], 2);
   }
   else {
-    if(context.frameCount() / 3 % 2 == 0) {
-      context.core.drawBitmap(x - bitmapSbullet0[0]/2, y - bitmapSbullet0[1]/2, bitmapSbullet0, 2);
-    }
-    else {
-      context.core.drawBitmap(x - bitmapSbullet1[0]/2, y - bitmapSbullet1[1]/2, bitmapSbullet1, 2);
-    }
+    const unsigned char* bitmaps[] = {bitmapSbullet0, bitmapSbullet1};
+    context.core.drawBitmap(x - bitmapSbullet0[0]/2, y - bitmapSbullet0[1]/2, bitmaps[frame], 2);
   }
   //arduboy.drawPixel(x, y, 0);
 }
@@ -240,7 +234,6 @@ void Particle::move(Context& context) {
 }
 
 void Particle::draw(Context& context) {
-  
   switch(type) {
     default: {
       if(limit > 8) {

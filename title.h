@@ -18,7 +18,7 @@ struct Title {
   private:
   unsigned char cursor = TITLE_START_GAME;
   bool prevEnterButton = true;
-  bool prevUpButton = true;
-  bool prevDownButton = true;
+  bool prevUpButton    = true;
+  bool prevDownButton  = true;
 };
 

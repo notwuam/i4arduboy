@@ -24,9 +24,9 @@ struct Submarine : public Actor {
   static const int W = 10;
   static const int H = 4;
   
-  bool prevFire = false;
-  char extraLives = START_LIVES;
-  unsigned char armer = ARMER_FRAMES;
+  bool prevFire;
+  char extraLives;
+  unsigned char armer;
 
   void initialize();
   void move(Context& context);
@@ -38,7 +38,7 @@ struct Torpedo : public Actor {
   static const int W = 10;
   static const int H = 1;
 
-  float vx = 0.f;
+  float vx;
 
   void initialize();
   bool tryLaunch(float sx, float sy);
@@ -53,7 +53,8 @@ struct BigEnemy : public Actor {
   static const int W = 18;
   static const int H = 6;
 
-  bool grazed = false;
+  bool grazed;
+  unsigned char timer;
 
   void initialize(float y);
   void move(Context& context);
@@ -67,7 +68,7 @@ struct Bullet : public Actor {
   static const int H = 1;
   
   float angle;
-  unsigned char type = 0;
+  unsigned char type;
   
   void initialize(float sx, float sy, float radian, unsigned char type);
   void move(Context& context);

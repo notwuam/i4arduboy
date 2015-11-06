@@ -19,11 +19,13 @@ struct Context {
 
   void initialize() {
     frames = 0;
+    
     submarine.initialize();
     torpedo.initialize();
     inactivateCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     inactivateCharacters<Bullet>(bullets, BULLET_MAX);
     inactivateCharacters<Particle>(particles, PARTICLE_MAX);
+    
     echo.reset(*this, 0);
   }
   bool loop() {
@@ -63,14 +65,16 @@ struct Context {
     for(int i = 0; i < BIG_ENEMY_MAX; ++i) {
       if(!torpedo.exist()) { break; }
       if(!bigEnemies[i].exist()) { continue; }
+      // check graze
       if(
         Collision(bigEnemies[i].x, bigEnemies[i].y, bigEnemies[i].W, bigEnemies[i].H, 
-        torpedo.x, torpedo.y - GRAZE_RANGE, torpedo.W, torpedo.H + GRAZE_RANGE*2)
-        ) {
+          torpedo.x, torpedo.y - GRAZE_RANGE, torpedo.W, torpedo.H + GRAZE_RANGE*2)
+      ) {
+        // check hit
         if(
           Collision(bigEnemies[i].x, bigEnemies[i].y, bigEnemies[i].W, bigEnemies[i].H, 
-          torpedo.x, torpedo.y, torpedo.W, torpedo.H)
-          ) {
+            torpedo.x, torpedo.y, torpedo.W, torpedo.H)
+        ) {
           bigEnemies[i].onHit(*this);
           torpedo.onHit();
         }
@@ -181,13 +185,13 @@ struct Context {
   Echo echo;
   
   Submarine submarine;
-  Torpedo torpedo;
+  Torpedo   torpedo;
   
   BigEnemy bigEnemies[BIG_ENEMY_MAX];
-  Bullet bullets[BULLET_MAX];
+  Bullet   bullets[BULLET_MAX];
   Particle particles[PARTICLE_MAX];
 
-  long frames;
+  long  frames;
   float prevSubmarineX, prevSubmarineY;
 };
 

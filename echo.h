@@ -21,7 +21,7 @@ struct Echo {
 
   private:
   unsigned char intensities[ECHO_VERT_RESO];
-  bool acceptFlag;
+  bool  acceptFlag;
   float submarineX;
 };
 
