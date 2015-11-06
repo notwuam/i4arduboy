@@ -15,10 +15,11 @@ void Submarine::initialize() {
 }
 
 void Submarine::move(Context& context) {
-  static const float SPD   = 0.5f;
-  static const float SQRT2 = 0.7071067811f;
+  if(context.isGameover()) { return; }
   
   // control
+  static const float SPD   = 0.5f;
+  static const float SQRT2 = 0.7071067811f;
   if(context.core.pressed(BTN_U) && context.core.pressed(BTN_L)) {
     x -= SPD * SQRT2;
     y -= SPD * SQRT2;
@@ -66,9 +67,6 @@ void Submarine::move(Context& context) {
 
   // updating armer timer
   if(armer > 0) { --armer; }
-  if(extraLives < 0 && armer <= 0) {
-    --extraLives; // to exit from this game
-  }
 }
 
 void Submarine::draw(Context& context) {
@@ -84,9 +82,13 @@ void Submarine::draw(Context& context) {
 void Submarine::onHit(Context& context) {
   if(armer <= 0) {
     if(extraLives >= 0) {
-      context.spawnParticle(x - 2, y - 2, 0);
+      context.spawnParticle(x - 2, y - 4, 0);
     }
     --extraLives;
+    if(extraLives < 0) {
+      context.setGameover();
+      inactivate();
+    }
     armer = ARMER_FRAMES;
   }
 }
@@ -162,8 +164,8 @@ void BigEnemy::move(Context& context) {
   context.addEcho(x, y, y+H);
 
   // firing bullet
-  if(timer == 0) {
-    const float by = y +  bitmapCruEnemy0[1]/2;
+  if(timer == 0 && x < SCREEN_WIDTH - W / 2.f) {
+    const float by = y +  bitmapCruEnemy0[1] / 2;
     context.fireBullet(x, by, context.getFutureSubmarineAngle(x, by, BULLET_TYPE0_SPD), 0);
   }
 

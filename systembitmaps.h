@@ -1,5 +1,11 @@
 #pragma once
 
+// ExtraLives.png / 9x3
+PROGMEM const unsigned char bitmapExtraLives[] = {
+  9, 3,
+  0x02, 0x06, 0x07, 0x06, 0x06, 0x00, 0x05, 0x02, 0x05
+};
+
 // Wave0.png / 16x4
 PROGMEM const unsigned char bitmapWave0[] = {
   16, 4,

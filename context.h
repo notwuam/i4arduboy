@@ -5,6 +5,7 @@
 #include "util.h"
 #include "actor.h"
 #include "echo.h"
+#include "systembitmaps.h"
 
 struct Submarine;
 struct Torpedo;
@@ -16,9 +17,16 @@ struct Context {
   }
   
   inline long frameCount() const { return frames; }
+  inline void setGameover() {
+    if(gameoverCount < 0) {
+      gameoverCount = 0;
+    }
+  }
+  inline bool isGameover() const { return gameoverCount >= 0; }
 
   void initialize() {
     frames = 0;
+    gameoverCount = -1;
     
     submarine.initialize();
     torpedo.initialize();
@@ -33,13 +41,19 @@ struct Context {
     moveAll();
     hitTest();
     drawAll();
-    ++frames;
 
-    // if return true then exit
+    // clock
+    ++frames;
+    if(gameoverCount >= 0) { ++gameoverCount; }
+
+    // exit game if return true
     if(core.pressed(BTN_A) && core.pressed(BTN_B) && core.pressed(BTN_L)) {
       return true;  // A+B+Left to terminate
     }
-    return submarine.extraLives < -1;
+    if(gameoverCount > 100 && (core.pressed(BTN_A) || core.pressed(BTN_B))) {
+      return true;  // skip gameover text;
+    }
+    return gameoverCount >= 300;
   }
   
   void spawn() {
@@ -95,22 +109,35 @@ struct Context {
     }
   }
   void drawAll() {
+    // background
     const int fieldX = -frameCount() / 16;
     DrawWave(core, fieldX, frameCount());
     DrawBottom(core, fieldX);
+
+    // disp extralives
+    core.drawBitmap(0, 4, bitmapExtraLives, 1);
+    char text[2];
+    sprintf(text, "%d", submarine.extraLives < 0 ? 0 : submarine.extraLives);
+    core.setCursor(10, 0);
+    core.print(text);
     
-    echo.draw(*this);
+    // echo
+    if(!isGameover()) {
+      echo.draw(*this);
+    }
+
+    // characters
     submarine.draw(*this);
     torpedo.draw(*this);
     drawCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     drawCharacters<Bullet>(bullets, BULLET_MAX);
     drawCharacters<Particle>(particles, PARTICLE_MAX);
 
-    // disp extralives
-    char text[2];
-    sprintf(text, "%d", submarine.extraLives < 0 ? 0 : submarine.extraLives);
-    core.setCursor(0, 0);
-    core.print(text);
+    // gameover
+    if(gameoverCount > 100) {
+      core.setCursor(SCREEN_WIDTH / 2 - 24, SCREEN_HEIGHT / 2 - 3);
+      core.print("GAMEOVER");
+    }
   }
 
   void addEcho(const float left, const float top, const float bottom) {
@@ -193,5 +220,6 @@ struct Context {
 
   long  frames;
   float prevSubmarineX, prevSubmarineY;
+  int   gameoverCount;
 };
 
