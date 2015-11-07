@@ -1,7 +1,7 @@
 #include "echo.h"
 #include "context.h"
 
-void Echo::reset(Context& context, const float subX) {
+void Echo::reset(Context& context, const byte subX) {
   if(context.frameCount() % ECHO_CYCLE == 0) {
     for(byte i = 0; i < ECHO_VERT_RESO; ++i) {
       intensities[i] = 0;
@@ -11,7 +11,7 @@ void Echo::reset(Context& context, const float subX) {
   else {
     acceptFlag = false;
   }
-  submarineX = round(subX);
+  submarineX = subX;
 }
 
 void Echo::add(const float left, const float top, const float bottom) {

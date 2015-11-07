@@ -49,7 +49,7 @@ struct Context {
     gameoverCount = -1;
     
     submarine.initialize();
-    torpedo.initialize();
+    torpedo.inactivate();
     inactivateCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     inactivateCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
@@ -73,7 +73,7 @@ struct Context {
     
     // === move ===
     submarine.move(*this);
-    echo.reset(*this, submarine.x);
+    echo.reset(*this, round(submarine.x));
     torpedo.move(*this);
     moveCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     moveCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
@@ -227,8 +227,8 @@ struct Context {
   }
 
   // spawn characters
-  bool tryLaunchTorpedo(const float x, const float y) {
-    torpedo.tryLaunch(x, y);
+  void launchTorpedo(const float x, const float y) {
+    torpedo.launch(x, y);
   }
   void fireAutoShot(const float x, const float y) {
     const byte i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
@@ -255,29 +255,35 @@ struct Context {
     }
   }
   void spawnParticle(const float x, const float y, const byte type) {
+    // this init will not be inline
+    if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
     const byte i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
     if(i >= 0) {
-      particles[i].initialize(x, y, type);
+      particles[i].activate(x, y);
+      particles[i].type = type;
+      switch(type) {
+        default: particles[i].limit = 12; break;
+      }
     }
   }
 
   private:
-  template<typename T> void inactivateCharacters(T pool[], const byte n) {
+  template<typename T> inline void inactivateCharacters(T pool[], const byte n) {
     for(byte i = 0; i < n; ++i) {
       pool[i].inactivate();
     }
   }
-  template<typename T> void moveCharacters(T pool[], const byte n) {
+  template<typename T> inline void moveCharacters(T pool[], const byte n) {
     for(byte i = 0; i < n; ++i) {
       if(pool[i].exist()) { pool[i].move(*this); }
     }
   }
-  template<typename T> void drawCharacters(T pool[], const byte n) {
+  template<typename T> inline void drawCharacters(T pool[], const byte n) {
     for(byte i = 0; i < n; ++i) {
       if(pool[i].exist()) { pool[i].draw(*this); }
     }
   }
-  template<typename T> byte searchAvailableIndex(const T pool[], const byte n) {
+  template<typename T> inline byte searchAvailableIndex(const T pool[], const byte n) {
     for(byte i = 0; i < n; ++i) {
       if(!pool[i].exist()) { return i; }
     }

@@ -10,7 +10,7 @@
 struct Context;
 
 struct Echo {
-  void reset(Context& context, const float subX);
+  void reset(Context& context, const byte subX);
   void add(const float left, const float top, const float bottom);
   void draw(Context& context);
 

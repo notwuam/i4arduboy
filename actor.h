@@ -9,7 +9,7 @@ struct Actor {
   float x = EXIST_THRESHOLD;
   float y;
 
-  void activate(const float x, const float y) {
+  inline void activate(const float x, const float y) {
     this->x = x;
     this->y = y;
   }
@@ -41,8 +41,7 @@ struct Torpedo : public Actor {
 
   float vx;
 
-  void initialize();
-  bool tryLaunch(const float sx, const float sy);
+  void launch(const float x, const float y);
   void move(Context& context);
   void draw(Context& context);
   void onHit() { inactivate(); }
@@ -106,7 +105,7 @@ struct Particle : public Actor {
   byte type;
   byte limit;
 
-  void initialize(const float x, const float y, const byte type);
+  //void initialize(const float x, const float y, const byte type); // in order to reduce memory
   void move(Context& context);
   void draw(Context& context);
 };

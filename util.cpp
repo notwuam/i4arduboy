@@ -17,25 +17,20 @@ float Clamp(const float value, const float min, const float max) {
 }
 
 void DrawWave(GameCore& core, const int beginX, const unsigned long frameCount) {
-  const byte* bitmaps[] = {bitmapWave0, bitmapWave1, bitmapWave2, bitmapWave3};
-  const byte w = bitmapWave0[0];
-  const byte x = beginX % (w * 4);
-  for(byte i = 0; i < SCREEN_WIDTH / w + 4; ++i) {
-    const byte xx = x + w * i;
-    if(xx > SCREEN_WIDTH) { break; }
-    if(xx + w < 0) { continue; }
-    core.drawBitmap(xx, 0, bitmaps[(frameCount / 20 + i) % 4], 1);
-  }
+  const byte w = bitmapWave[0];
+  const char d = beginX % w;
+  const char x = (w * 2 + d - (char)(frameCount / 20 % 4) * (w / 4)) % w;
+  core.drawBitmap(x - w, 0, bitmapWave, 1);
+  core.drawBitmap(x    , 0, bitmapWave, 1);
+  core.drawBitmap(x + w, 0, bitmapWave, 1);
 }
 
 void DrawBottom(GameCore& core, const int beginX) {
   const byte w = bitmapBottom[0];
-  const byte h = bitmapBottom[1];
-  const byte x = beginX % w;
-  core.drawBitmap(x, SCREEN_HEIGHT - h, bitmapBottom, 1);
-  core.drawBitmap(x + w, SCREEN_HEIGHT - h, bitmapBottom, 1);
-  if(x + w * 2 < SCREEN_WIDTH) {
-    core.drawBitmap(x + w * 2, SCREEN_HEIGHT - h, bitmapBottom, 1);
-  }
+  const byte y = SCREEN_HEIGHT - bitmapBottom[1];
+  const char x = beginX % w;
+  core.drawBitmap(x,         y, bitmapBottom, 1);
+  core.drawBitmap(x + w,     y, bitmapBottom, 1);
+  core.drawBitmap(x + w * 2, y, bitmapBottom, 1);
 }
 

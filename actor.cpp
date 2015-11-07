@@ -57,7 +57,7 @@ void Submarine::move(Context& context) {
   // launching torpedo
   if(extraLives >= 0 && (context.core.pressed(BTN_A) || context.core.pressed(BTN_B))) {
     if(!prevFire) {
-      context.tryLaunchTorpedo(x + 10, y + 1);
+      context.launchTorpedo(x + 10, y + 1);
     }
     prevFire = true;
   }
@@ -108,17 +108,11 @@ void Submarine::onHit(Context& context) {
 
 // === Torpedo ===
 
-void Torpedo::initialize() {
-  inactivate();
-}
-
-bool Torpedo::tryLaunch(const float sx, const float sy) {
+void Torpedo::launch(const float x, const float y) {
   if(!exist()) {
-    activate(sx, sy);
+    activate(x, y);
     vx = 0.f;
-    return true;
   }
-  return false;
 }
 
 void Torpedo::move(Context& context) {
@@ -345,15 +339,6 @@ void Bullet::onHit(Context& context) {
 
 
 // === Particle ===
-
-void Particle::initialize(const float x, const float y, const byte type) {
-  if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
-  activate(x, y);
-  this->type;
-  switch(type) {
-    default: limit = 12; break;
-  }
-}
 
 void Particle::move(Context& context) {
   --limit;
