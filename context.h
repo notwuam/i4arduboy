@@ -61,36 +61,17 @@ struct Context {
     randomSeed(core.frameCount());
   }
   bool loop() {
-    spawn();
-    moveAll();
-    hitTest();
-    drawAll();
-
-    // clock
-    ++frames;
-    if(gameoverCount >= 0) { ++gameoverCount; }
-
-    // exit game if return true
-    if(core.pressed(BTN_A) && core.pressed(BTN_B) && core.pressed(BTN_L)) {
-      return true;  // A+B+Left to terminate
-    }
-    if(gameoverCount > 100 && (core.pressed(BTN_A) || core.pressed(BTN_B))) {
-      return true;  // skip gameover text;
-    }
-    return gameoverCount >= 300;
-  }
-  
-  void spawn() {
+    // spawn
     if(frameCount() % 120 == 0) {
       spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
       spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_TRI_FIRE);
     }
-  }
-  void moveAll() {
-    // to forecast the position of submarine
+
+    // in order to forecast the position of submarine
     prevSubmarineX = submarine.x;
     prevSubmarineY = submarine.y;
     
+    // === move ===
     submarine.move(*this);
     echo.reset(*this, submarine.x);
     torpedo.move(*this);
@@ -99,8 +80,8 @@ struct Context {
     moveCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     moveCharacters<Bullet>(bullets, BULLET_MAX);
     moveCharacters<Particle>(particles, PARTICLE_MAX);
-  }
-  void hitTest() {
+
+    // === hittest ===
     // BigEnemy vs Torpedo
     static const byte GRAZE_RANGE = 8;
     for(byte i = 0; i < BIG_ENEMY_MAX; ++i) {
@@ -174,8 +155,8 @@ struct Context {
         submarine.onHit(*this);
       }
     }
-  }
-  void drawAll() {
+
+    // === draw ===
     // background
     const int fieldX = -frameCount() / 16;
     DrawWave(core, fieldX, frameCount());
@@ -207,6 +188,20 @@ struct Context {
       core.setCursor(SCREEN_WIDTH / 2 - 24, SCREEN_HEIGHT / 2 - 3);
       core.print("GAMEOVER");
     }
+
+    // === post process ===
+    // clock
+    ++frames;
+    if(gameoverCount >= 0) { ++gameoverCount; }
+
+    // exit game if return true
+    if(core.pressed(BTN_A) && core.pressed(BTN_B) && core.pressed(BTN_L)) {
+      return true;  // A+B+Left to terminate
+    }
+    if(gameoverCount > 100 && (core.pressed(BTN_A) || core.pressed(BTN_B))) {
+      return true;  // skip gameover text;
+    }
+    return gameoverCount >= 300;
   }
 
   void addEcho(const float left, const float top, const float bottom) {

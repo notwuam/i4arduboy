@@ -30,13 +30,7 @@ byte Title::loop(GameCore& core) {
   }
   prevEnterButton = enterButton;
 
-  // drawing
-  draw(core);
-  
-  return TITLE_NOINPUT;
-}
-
-void Title::draw(GameCore& core) {
+  // === drawing ===
   // logo and background
   core.drawBitmap(10, SCREEN_HEIGHT/2 - bitmapLogo[1]/2 - 1, bitmapLogo, 1);
   DrawWave(core, 0, core.frameCount());
@@ -58,5 +52,7 @@ void Title::draw(GameCore& core) {
   // cursor
   core.setCursor(63, (cursor-1) * 13 + 15);
   core.print(">");
+  
+  return TITLE_NOINPUT;
 }
 

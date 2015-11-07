@@ -15,11 +15,6 @@ struct Echo {
   void draw(Context& context);
 
   private:
-  byte distToIntensity(const float dist) const {
-    return (byte)((FIELD_WIDTH - dist) / 20);
-  }
-
-  private:
   byte intensities[ECHO_VERT_RESO];
   byte submarineX;
   bool acceptFlag;

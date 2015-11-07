@@ -22,7 +22,7 @@ void Echo::add(const float left, const float top, const float bottom) {
   
   const byte b = round(top) / ECHO_GRID_SIZE;
   const byte e = round(bottom) / ECHO_GRID_SIZE;
-  byte newInte = distToIntensity(dist);
+  byte newInte = (byte)((FIELD_WIDTH - dist) / 20);
   
   for(byte i = b; i <= e; ++i) {
     if(newInte > intensities[i]) {

@@ -14,9 +14,6 @@ struct Title {
   byte loop(GameCore& core);
 
   private:
-  void draw(GameCore& core);
-  
-  private:
   byte cursor = TITLE_START_GAME;
   bool prevEnterButton = true;
   bool prevUpButton    = true;
