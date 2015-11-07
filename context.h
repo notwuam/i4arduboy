@@ -25,17 +25,22 @@ struct Context {
   inline bool isGameover() const { return gameoverCount >= 0; }
 #ifndef LOW_MEMORY
   bool lookForEnemy() const {
-    for(int i; i < BIG_ENEMY_MAX; ++i) {
+    for(byte i = 0; i < BIG_ENEMY_MAX; ++i) {
       if(bigEnemies[i].x > 0 && bigEnemies[i].x < SCREEN_WIDTH + 16) {
         return true;
       }
     }
-    for(int i; i < SMALL_ENEMY_MAX; ++i) {
+    for(byte i = 0; i < SMALL_ENEMY_MAX; ++i) {
       if(smallEnemies[i].x > 0 && smallEnemies[i].x < SCREEN_WIDTH + 16) {
         return true;
       }
     }
     return false;
+  }
+  void removeAllBullets() {
+    for(byte i = 0; i < BULLET_MAX; ++i) {
+      bullets[i].onHit(*this);
+    }
   }
 #endif
 
@@ -52,6 +57,8 @@ struct Context {
     inactivateCharacters<Particle>(particles, PARTICLE_MAX);
     
     echo.reset(*this, 0);
+
+    randomSeed(core.frameCount());
   }
   bool loop() {
     spawn();
@@ -76,7 +83,7 @@ struct Context {
   void spawn() {
     if(frameCount() % 120 == 0) {
       spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
-      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_TRI_NOFIRE);
+      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_TRI_FIRE);
     }
   }
   void moveAll() {
@@ -95,8 +102,8 @@ struct Context {
   }
   void hitTest() {
     // BigEnemy vs Torpedo
-    static const int GRAZE_RANGE = 8;
-    for(int i = 0; i < BIG_ENEMY_MAX; ++i) {
+    static const byte GRAZE_RANGE = 8;
+    for(byte i = 0; i < BIG_ENEMY_MAX; ++i) {
       if(!torpedo.exist()) { break; }
       if(!bigEnemies[i].exist()) { continue; }
       // check graze
@@ -119,7 +126,7 @@ struct Context {
     }
 #ifndef LOW_MEMORY
     // SmallEnemy vs Torpedo
-    for(int i = 0; i < SMALL_ENEMY_MAX; ++i) {
+    for(byte i = 0; i < SMALL_ENEMY_MAX; ++i) {
       if(!torpedo.exist()) { break; }
       if(!smallEnemies[i].exist()) { continue; }
       if(Collision(
@@ -131,10 +138,10 @@ struct Context {
     }
 #endif
     // AutoShot
-    for(int shotIdx = 0; shotIdx < AUTO_SHOT_MAX; ++shotIdx) {
+    for(byte shotIdx = 0; shotIdx < AUTO_SHOT_MAX; ++shotIdx) {
       if(!autoShots[shotIdx].exist()) { continue; }
       // vs SmallEnemy
-      for(int smallEnemyIdx = 0; smallEnemyIdx < SMALL_ENEMY_MAX; ++smallEnemyIdx) {
+      for(byte smallEnemyIdx = 0; smallEnemyIdx < SMALL_ENEMY_MAX; ++smallEnemyIdx) {
         if(!smallEnemies[smallEnemyIdx].exist()) { continue; }
         if(Collision(
           autoShots[shotIdx].x, autoShots[shotIdx].y, autoShots[shotIdx].W, autoShots[shotIdx].H,
@@ -146,7 +153,7 @@ struct Context {
       }
 #ifndef LOW_MEMORY
       // vs BigEnemy
-      for(int bigEnemyIdx = 0; bigEnemyIdx < BIG_ENEMY_MAX; ++bigEnemyIdx) {
+      for(byte bigEnemyIdx = 0; bigEnemyIdx < BIG_ENEMY_MAX; ++bigEnemyIdx) {
         if(!bigEnemies[bigEnemyIdx].exist()) { continue; }
         if(Collision(
           autoShots[shotIdx].x, autoShots[shotIdx].y, autoShots[shotIdx].W, autoShots[shotIdx].H,
@@ -159,7 +166,7 @@ struct Context {
     }
 
     // Bullet vs Submarine
-    for(int i = 0; i < BULLET_MAX; ++i) {
+    for(byte i = 0; i < BULLET_MAX; ++i) {
       if(!submarine.exist()) { break; } // todo armer
       if(!bullets[i].exist()) { continue; }
       if(Collision(bullets[i].x, bullets[i].y, bullets[i].W, bullets[i].H, submarine.x, submarine.y, submarine.W, submarine.H)) {
@@ -229,54 +236,54 @@ struct Context {
     torpedo.tryLaunch(x, y);
   }
   void fireAutoShot(const float x, const float y) {
-    const int i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
+    const byte i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
     if(i >= 0) {
       autoShots[i].initialize(x, y);
     }
   }
   void spawnBigEnemy(const float y) {
-    const int i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
+    const byte i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     if(i >= 0) {
       bigEnemies[i].initialize(y);
     }
   }
-  void spawnSmallEnemy(const float y, const unsigned char type) {
-    const int i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
+  void spawnSmallEnemy(const float y, const byte type) {
+    const byte i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     if(i >= 0) {
       smallEnemies[i].initialize(y, type);
     }
   }
-  void fireBullet(const float x, const float y, const float radian, const unsigned char type) {
-    const int i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
+  void fireBullet(const float x, const float y, const float radian, const byte type) {
+    const byte i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
     if(i >= 0) {
       bullets[i].initialize(x, y, radian, type);
     }
   }
-  void spawnParticle(const float x, const float y, const unsigned char type) {
-    const int i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
+  void spawnParticle(const float x, const float y, const byte type) {
+    const byte i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
     if(i >= 0) {
       particles[i].initialize(x, y, type);
     }
   }
 
   private:
-  template<typename T> void inactivateCharacters(T pool[], const int n) {
-    for(int i = 0; i < n; ++i) {
+  template<typename T> void inactivateCharacters(T pool[], const byte n) {
+    for(byte i = 0; i < n; ++i) {
       pool[i].inactivate();
     }
   }
-  template<typename T> void moveCharacters(T pool[], const int n) {
-    for(int i = 0; i < n; ++i) {
+  template<typename T> void moveCharacters(T pool[], const byte n) {
+    for(byte i = 0; i < n; ++i) {
       if(pool[i].exist()) { pool[i].move(*this); }
     }
   }
-  template<typename T> void drawCharacters(T pool[], const int n) {
-    for(int i = 0; i < n; ++i) {
+  template<typename T> void drawCharacters(T pool[], const byte n) {
+    for(byte i = 0; i < n; ++i) {
       if(pool[i].exist()) { pool[i].draw(*this); }
     }
   }
-  template<typename T> int searchAvailableIndex(const T pool[], const int n) {
-    for(int i = 0; i < n; ++i) {
+  template<typename T> byte searchAvailableIndex(const T pool[], const byte n) {
+    for(byte i = 0; i < n; ++i) {
       if(!pool[i].exist()) { return i; }
     }
     return -1;  // not found

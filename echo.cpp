@@ -3,7 +3,7 @@
 
 void Echo::reset(Context& context, const float subX) {
   if(context.frameCount() % ECHO_CYCLE == 0) {
-    for(int i = 0; i < ECHO_VERT_RESO; ++i) {
+    for(byte i = 0; i < ECHO_VERT_RESO; ++i) {
       intensities[i] = 0;
     }
     acceptFlag = true;
@@ -20,11 +20,11 @@ void Echo::add(const float left, const float top, const float bottom) {
   const float dist = left - submarineX;
   if(dist < 0.f) { return; }
   
-  const int b = round(top) / ECHO_GRID_SIZE;
-  const int e = round(bottom) / ECHO_GRID_SIZE;
-  unsigned char newInte = distToIntensity(dist);
+  const byte b = round(top) / ECHO_GRID_SIZE;
+  const byte e = round(bottom) / ECHO_GRID_SIZE;
+  byte newInte = distToIntensity(dist);
   
-  for(int i = b; i <= e; ++i) {
+  for(byte i = b; i <= e; ++i) {
     if(newInte > intensities[i]) {
       intensities[i] = newInte; // update
     }
@@ -38,8 +38,8 @@ void Echo::draw(Context& context) {
   ) {
     return;
   }
-  for(int i = 0; i < ECHO_VERT_RESO; ++i) {
-    for(int j = 0; j < intensities[i]; ++j) {
+  for(byte i = 0; i < ECHO_VERT_RESO; ++i) {
+    for(byte j = 0; j < intensities[i]; ++j) {
       context.core.fillRect(SCREEN_WIDTH - (j - 1) * ECHO_GRID_SIZE, i * ECHO_GRID_SIZE, ECHO_GRID_SIZE - 1, ECHO_GRID_SIZE - 1, 1);
     }
   }

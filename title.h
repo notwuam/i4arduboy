@@ -7,16 +7,17 @@ enum {
   TITLE_DISP_RANKING,
 };
 
+typedef unsigned char byte;
 struct GameCore;
 
 struct Title {
-  int loop(GameCore& core);
+  byte loop(GameCore& core);
 
   private:
   void draw(GameCore& core);
   
   private:
-  unsigned char cursor = TITLE_START_GAME;
+  byte cursor = TITLE_START_GAME;
   bool prevEnterButton = true;
   bool prevUpButton    = true;
   bool prevDownButton  = true;

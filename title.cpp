@@ -3,7 +3,7 @@
 #include "util.h"
 #include "systembitmaps.h"
 
-int Title::loop(GameCore& core) {
+byte Title::loop(GameCore& core) {
   // controls
   // up
   if(core.pressed(BTN_U) && !prevUpButton) {

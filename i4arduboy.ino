@@ -15,10 +15,10 @@ GameCore core;
 Title title;
 Context context(core);
 
-unsigned char scene = 0;
+byte scene = 0;
 
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   core.setup();
   context.initialize();
 }
@@ -50,7 +50,7 @@ void loop() {
   
   /*
   char text[16];
-  sprintf(text, "%d", core.frameCount());
+  sprintf(text, "%c%c%c", EEPROM.read(102), EEPROM.read(103),  EEPROM.read(104));
   core.setCursor(10, 10);
   core.print(text);
   */

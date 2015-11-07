@@ -50,7 +50,7 @@ void Submarine::move(Context& context) {
   }
 
   // clamping into field
-  static const int MARGIN = 6;
+  static const byte MARGIN = 6;
   x = Clamp(x, MARGIN - W / 2.f, SCREEN_WIDTH  - MARGIN - W / 2.f);
   y = Clamp(y, MARGIN - H / 2.f, SCREEN_HEIGHT - MARGIN - H / 2.f);
 
@@ -94,6 +94,7 @@ void Submarine::onHit(Context& context) {
   if(armer <= 0) {
     if(extraLives >= 0) {
       context.spawnParticle(x - 2, y - 4, 0);
+      context.core.tone(523, 250);
     }
     --extraLives;
     if(extraLives < 0) {
@@ -138,8 +139,8 @@ void Torpedo::draw(Context& context) {
   context.core.drawBitmap(x, y - 1, bitmapTorpedo, 2);
   // shockwave
   if(vx > 3.2f) { // well accelerated
-    const int w = bitmapShockwave0[0];
-    const int h = bitmapShockwave0[1];
+    const byte w = bitmapShockwave0[0];
+    const byte h = bitmapShockwave0[1];
     context.core.drawBitmap(x -  8, y - h/2, bitmapShockwave0, 2);
     context.core.drawBitmap(x - 16, y - h/2, bitmapShockwave1, 2);
     context.core.drawBitmap(x - 24, y - h/2, bitmapShockwave2, 2);
@@ -199,7 +200,7 @@ void BigEnemy::move(Context& context) {
   }
 
   // updating timer
-  static const unsigned char PERIOD = 150;
+  static const byte PERIOD = 150;
   timer = (timer + 1) % PERIOD;
 }
 
@@ -211,20 +212,26 @@ void BigEnemy::draw(Context& context) {
 void BigEnemy::onHit(Context& context) {
   context.spawnParticle(x, y, 0);
   context.core.playScore(bing);
+#ifndef LOW_MEMORY
+  if(x < SCREEN_WIDTH + 20) {
+    context.removeAllBullets();
+    // ToDo: quake
+  }
+#endif
   inactivate();
 }
 
 
 // === SmallEnemy ===
 
-void SmallEnemy::initialize(const float y, const unsigned char type) {
+void SmallEnemy::initialize(const float y, const byte type) {
   activate(FIELD_WIDTH, y);
   this->type = type;
   timer = 0;
 }
 
 void SmallEnemy::move(Context& context) {
-  const unsigned char period = (type / 2 == 0) ? 96 : 128;
+  const byte period = (type / 2 == 0) ? 96 : 128;
 
   switch(type / 2) {
     // zigzag
@@ -269,15 +276,15 @@ void SmallEnemy::draw(Context& context) {
   switch(type / 2) {
     // zigzag
     case 0: {
-      const unsigned char* bitmaps[] = {bitmapZigEnemy0, bitmapZigEnemy1};
-      const int frame = timer / (ZIG_PERIOD / 4) % 2;
+      const byte* bitmaps[] = {bitmapZigEnemy0, bitmapZigEnemy1};
+      const byte frame = timer / (ZIG_PERIOD / 4) % 2;
       context.core.drawBitmap(x - 3, y - 3, bitmaps[frame], 2);
     } break;
     
     // triangle
     default: {
-      const unsigned char* bitmaps[] = {bitmapTriEnemy0, bitmapTriEnemy1};
-      const int frame = (timer % (TRI_PERIOD / 2) < 24) ? 1 : 0;
+      const byte* bitmaps[] = {bitmapTriEnemy0, bitmapTriEnemy1};
+      const byte frame = (timer % (TRI_PERIOD / 2) < 24) ? 1 : 0;
       context.core.drawBitmap(x - 3, y - 4, bitmaps[frame], 2);
       if(frame == 1) {
         context.core.drawBitmap(x + 7, y - 2, bitmapBoostEffect, 2);
@@ -295,7 +302,7 @@ void SmallEnemy::onHit(Context& context) {
 
 // === Bullet ===
 
-void Bullet::initialize(const float sx, const float sy, const float radian, const unsigned char type) {
+void Bullet::initialize(const float sx, const float sy, const float radian, const byte type) {
   activate(sx, sy);
   angle = radian;
   this->type = type;
@@ -307,7 +314,7 @@ void Bullet::move(Context& context) {
   y += speed * sin(angle);
 
   // frame out
-  static const int MARGIN = 4;
+  static const byte MARGIN = 4;
   if(
     x < -MARGIN || x > SCREEN_WIDTH  + MARGIN ||
     y < -MARGIN || y > SCREEN_HEIGHT + MARGIN
@@ -318,27 +325,28 @@ void Bullet::move(Context& context) {
 
 void Bullet::draw(Context& context) {
   // ToDo: async animation (if there are enough memories)
-  const int frame = context.frameCount() / 3 % 2;
+  const byte frame = context.frameCount() / 3 % 2;
   
   if(type == 0) {
-    const unsigned char* bitmaps[] = {bitmapMbullet0, bitmapMbullet1};
+    const byte* bitmaps[] = {bitmapMbullet0, bitmapMbullet1};
     context.core.drawBitmap(x - bitmapMbullet0[0]/2, y - bitmapMbullet0[1]/2, bitmaps[frame], 2);
   }
   else {
-    const unsigned char* bitmaps[] = {bitmapSbullet0, bitmapSbullet1};
+    const byte* bitmaps[] = {bitmapSbullet0, bitmapSbullet1};
     context.core.drawBitmap(x - bitmapSbullet0[0]/2, y - bitmapSbullet0[1]/2, bitmaps[frame], 2);
   }
   //arduboy.drawPixel(x, y, 0);
 }
 
 void Bullet::onHit(Context& context) {
+  context.core.drawCircle(x, y, 6, 1);
   inactivate();
 }
 
 
 // === Particle ===
 
-void Particle::initialize(const float x, const float y, const unsigned char type) {
+void Particle::initialize(const float x, const float y, const byte type) {
   if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
   activate(x, y);
   this->type;

@@ -15,13 +15,13 @@ struct Echo {
   void draw(Context& context);
 
   private:
-  unsigned char distToIntensity(const float dist) const {
-    return (unsigned char)((FIELD_WIDTH - dist) / 20);
+  byte distToIntensity(const float dist) const {
+    return (byte)((FIELD_WIDTH - dist) / 20);
   }
 
   private:
-  unsigned char intensities[ECHO_VERT_RESO];
-  unsigned char submarineX;
+  byte intensities[ECHO_VERT_RESO];
+  byte submarineX;
   bool acceptFlag;
 };
 

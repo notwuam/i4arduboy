@@ -20,27 +20,33 @@ struct GameCore {
   void setup() {
     arduboy.start();
     arduboy.setFrameRate(60);
-    arduboy.print("Hello World");
-    arduboy.display();
   }
   
   inline bool nextFrame() { return arduboy.nextFrame(); }
   inline void clearDisplay() { arduboy.clearDisplay(); }
   inline void display() { arduboy.display(); }
   inline int frameCount() { return arduboy.frameCount; }
-  inline bool pressed(unsigned char button) { return arduboy.pressed(button); }
-  inline void drawPixel(int x, int y, unsigned char c) { arduboy.drawPixel(x, y, c); }
-  inline void drawBitmap(float x, float y, const unsigned char* bitmap, unsigned char c) {
+  inline bool pressed(byte button) { return arduboy.pressed(button); }
+  inline void drawPixel(int x, int y, byte c) { arduboy.drawPixel(x, y, c); }
+  inline void drawBitmap(float x, float y, const byte* bitmap, byte c) {
     arduboy.drawBitmap(round(x), round(y), bitmap+2, pgm_read_byte(bitmap), pgm_read_byte(bitmap+1), c);
   }
-  inline void fillRect(int x, int y, int w, int h, unsigned char c) {
+  inline void fillRect(int x, int y, int w, int h, byte c) {
     arduboy.fillRect(x, y, w, h, c);
+  }
+  inline void drawCircle(int x, int y, int r, byte c) {
+    arduboy.drawCircle(x, y, r, c);
   }
   inline void setCursor(int x, int y) { arduboy.setCursor(x, y); }
   inline void print(char* text) { arduboy.print(text); }
-  void playScore(const unsigned char* score) {
+  void playScore(const byte* score) {
     if(soundOn) {
       arduboy.tunes.playScore(score);
+    }
+  }
+  void tone(const unsigned int f, const unsigned long d) {
+    if(soundOn) {
+      arduboy.tunes.tone(f, d);
     }
   }
 
