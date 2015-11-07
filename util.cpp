@@ -2,15 +2,15 @@
 #include "systembitmaps.h"
 
 bool Collision(
-  const float x1, const float y1, const byte w1, const byte h1, 
-  const float x2, const float y2, const byte w2, const byte h2
+  const int x1, const char y1, const byte w1, const byte h1, 
+  const int x2, const char y2, const byte w2, const byte h2
 ) {
   if(x1 + w1 < x2 || x1 > x2 + w2) { return false; }
   if(y1 + h1 < y2 || y1 > y2 + h2) { return false; }
   return true;
 }
 
-float Clamp(const float value, const float min, const float max) {
+int Clamp(const int value, const int min, const int max) {
   if(value < min) { return min; }
   if(value > max) { return max; }
   return value;

@@ -51,11 +51,13 @@ void Submarine::move(Context& context) {
   }
 
   // clamping into field
-  static const int MARGIN = 6 << 8;
-  if(x < MARGIN) { x = MARGIN; }
+  static const fixed MARGIN = 6 << 8;
+  /*if(x < MARGIN) { x = MARGIN; }
   if(x > (SCREEN_WIDTH << 8) - MARGIN) { x = (SCREEN_WIDTH << 8) - MARGIN; }
   if(y < MARGIN) { y = MARGIN; }
-  if(y > (SCREEN_HEIGHT << 8) - MARGIN) { y = (SCREEN_HEIGHT << 8) - MARGIN; }
+  if(y > (SCREEN_HEIGHT << 8) - MARGIN) { y = (SCREEN_HEIGHT << 8) - MARGIN; }*/
+  x = Clamp(x, MARGIN, (SCREEN_WIDTH  << 8) - MARGIN);
+  y = Clamp(y, MARGIN, (SCREEN_HEIGHT << 8) - MARGIN);
 
   // launching torpedo
   if(extraLives >= 0 && (context.core.pressed(BTN_A) || context.core.pressed(BTN_B))) {
@@ -96,7 +98,7 @@ void Submarine::draw(Context& context) {
 void Submarine::onHit(Context& context) {
   if(armer <= 0) {
     if(extraLives >= 0) {
-      context.spawnParticle(x - 2, y - 4, 0);
+      context.spawnParticle(fieldX() - 2, fieldY() - 4, 0);
       context.core.tone(523, 250);
     }
     --extraLives;
@@ -111,7 +113,7 @@ void Submarine::onHit(Context& context) {
 
 // === Torpedo ===
 
-void Torpedo::launch(const int x, const int y) {
+void Torpedo::launch(const char x, const char y) {
   if(!exist()) {
     this->x = x;
     this->y = y;
@@ -120,7 +122,7 @@ void Torpedo::launch(const int x, const int y) {
 }
 
 void Torpedo::move(Context& context) {
-  static const int ACC = 1 << 7;  // 0.5
+  static const fixed ACC = 1 << 7;  // 0.5
   if(!exist()) { return; }
   vx += ACC - (vx >> 4);
   x  += vx >> 8;
@@ -134,7 +136,7 @@ void Torpedo::draw(Context& context) {
   // body
   context.core.drawBitmap(x, y - 1, bitmapTorpedo, 2);
   // shockwave
-  if(vx > 3 << 8) { // well accelerated
+  if(vx > 4 << 8) { // well accelerated
     const byte w = bitmapShockwave0[0];
     const byte h = bitmapShockwave0[1];
     context.core.drawBitmap(x -  8, y - h/2, bitmapShockwave0, 2);
@@ -149,7 +151,7 @@ void Torpedo::draw(Context& context) {
 
 void AutoShot::move(Context& context) {
   // moving
-  x += 8.f;
+  x += 8;
 
   // frame out
   if(x > SCREEN_WIDTH) {
@@ -158,31 +160,32 @@ void AutoShot::move(Context& context) {
 }
 
 void AutoShot::draw(Context& context) {
-  context.core.drawBitmap(x + 2, y + 3, bitmapAutoShot, 2);
+  context.core.drawBitmap((int)x + 2, (int)y + 3, bitmapAutoShot, 2);
   //context.core.getArduboy().drawRect(x, y, W, H, 1);
 }
 
 
 // === BigEnemy ===
 
-void BigEnemy::initialize(const float y) {
-  activate(FIELD_WIDTH, y);
-  grazed = false;
-  timer  = 0;
+void BigEnemy::initialize(const char y) {
+  this->x = FIELD_WIDTH;
+  this->y = y;
+  grazed  = false;
+  timer   = 0;
 }
 
 void BigEnemy::move(Context& context) {
   // moving
   static const float NORMAL_SPD = -0.2f;
   if(grazed && x > SCREEN_WIDTH - 5) {
-    x += NORMAL_SPD * 16.f; // submarine found
+    x += -3; // submarine found
   }
-  else {
-    x += NORMAL_SPD;
+  else if(timer % 5 == 0) { // -0.2
+    --x;
   }
 
   // frame out
-  if(x + bitmapCruEnemy0[0] < 0.f) {
+  if(x + bitmapCruEnemy0[0] < 0) {
     inactivate();
   }
 
@@ -190,8 +193,8 @@ void BigEnemy::move(Context& context) {
   context.addEcho(x, y, y+H);
 
   // firing bullet
-  if(timer == 0 && x < SCREEN_WIDTH - W / 2.f) {
-    const float by = y +  bitmapCruEnemy0[1] / 2;
+  if(timer == 0 && x < SCREEN_WIDTH - W / 2) {
+    const char by = y + bitmapCruEnemy0[1] / 2;
     context.fireBullet(x, by, context.getFutureSubmarineAngle(x, by, BULLET_TYPE0_SPD), 0);
   }
 
@@ -220,10 +223,11 @@ void BigEnemy::onHit(Context& context) {
 
 // === SmallEnemy ===
 
-void SmallEnemy::initialize(const float y, const byte type) {
-  activate(FIELD_WIDTH, y);
+void SmallEnemy::initialize(const char y, const byte type) {
+  this->x    = FIELD_WIDTH;
+  this->y    = y;
   this->type = type;
-  timer = 0;
+  timer      = 0;
 }
 
 void SmallEnemy::move(Context& context) {
@@ -233,12 +237,16 @@ void SmallEnemy::move(Context& context) {
     // zigzag
     case 0: {
       // moving
-      static const float VY = 0.6f;
-      x += -VY * 2.4f;
-      y += (timer / (ZIG_PERIOD / 4) % 2 == 0) ? VY : -VY;
-      
+      // x -= 1.5, y -= 0.5
+      if(timer % 2 == 0) {
+        x -= 2;
+        y += (timer / (ZIG_PERIOD / 4) % 2 == 0) ? 1 : -1;
+      }
+      else {
+        --x;
+      }
       // firing bullet
-      if(timer == 88 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2.f) {
+      if(timer == 88 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2) {
         context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
       }
     } break;
@@ -246,17 +254,22 @@ void SmallEnemy::move(Context& context) {
     // triangle
     default: {
       // moving
-      x += -0.1f - 5.f / (timer % (period / 2) + 1);
+      if(timer % 10 == 0) { --x; }  // 0.1
+      const int half = period / 2;
+      int tmp = half - timer % half;
+      tmp = tmp*tmp / (half*half/4) - 1;
+      if(tmp < 0) { tmp = 0; }
+      x -= tmp;
       
       // firing bullet
-      if(timer == 64 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2.f) {
+      if(timer == 0 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2) {
         context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
       }
     } break;
   }
 
   // frame out
-  if(x + 12 < 0.f) {
+  if(x + 12 < 0) {
     inactivate();
   }
 
@@ -291,29 +304,32 @@ void SmallEnemy::draw(Context& context) {
 }
 
 void SmallEnemy::onHit(Context& context) {
-  context.spawnParticle(x - 5, y - 4, 0);
+  context.spawnParticle(round(x) - 5, round(y) - 4, 0);
   inactivate();
 }
 
 
 // === Bullet ===
 
-void Bullet::initialize(const float sx, const float sy, const float radian, const byte type) {
-  activate(sx, sy);
-  angle = radian;
+void Bullet::initialize(const char x, const char y, const float radian, const byte type) {
+  this->x    = x << 8;
+  this->y    = y << 8;
   this->type = type;
+  
+  const int speed = (type == 0 ? BULLET_TYPE0_SPD : BULLET_TYPE1_SPD);
+  vx = round(cos(radian) * speed / (1.f / 256));
+  vy = round(sin(radian) * speed / (1.f / 256));
 }
 
 void Bullet::move(Context& context) {
-  const float speed = (type == 0 ? BULLET_TYPE0_SPD : BULLET_TYPE1_SPD);
-  x += speed * cos(angle);
-  y += speed * sin(angle);
+  x += vx;
+  y += vy;
 
   // frame out
-  static const byte MARGIN = 4;
+  static const char MARGIN = 4;
   if(
-    x < -MARGIN || x > SCREEN_WIDTH  + MARGIN ||
-    y < -MARGIN || y > SCREEN_HEIGHT + MARGIN
+    fieldX() < -MARGIN || fieldX() > SCREEN_WIDTH  + MARGIN ||
+    fieldY() < -MARGIN || fieldY() > SCREEN_HEIGHT + MARGIN
   ) {
     inactivate();  
   }
@@ -325,17 +341,17 @@ void Bullet::draw(Context& context) {
   
   if(type == 0) {
     const byte* bitmaps[] = {bitmapMbullet0, bitmapMbullet1};
-    context.core.drawBitmap(x - bitmapMbullet0[0]/2, y - bitmapMbullet0[1]/2, bitmaps[frame], 2);
+    context.core.drawBitmap(fieldX() - bitmapMbullet0[0]/2, fieldY() - bitmapMbullet0[1]/2, bitmaps[frame], 2);
   }
   else {
     const byte* bitmaps[] = {bitmapSbullet0, bitmapSbullet1};
-    context.core.drawBitmap(x - bitmapSbullet0[0]/2, y - bitmapSbullet0[1]/2, bitmaps[frame], 2);
+    context.core.drawBitmap(fieldX() - bitmapSbullet0[0]/2, fieldY() - bitmapSbullet0[1]/2, bitmaps[frame], 2);
   }
   //arduboy.drawPixel(x, y, 0);
 }
 
 void Bullet::onHit(Context& context) {
-  context.core.drawCircle(x, y, 6, 1);
+  context.core.drawCircle(fieldX(), fieldY(), 6, 1);
   inactivate();
 }
 

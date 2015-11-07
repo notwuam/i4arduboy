@@ -64,16 +64,16 @@ struct Context {
     // spawn
     if(frameCount() % 120 == 0) {
       spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
-      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_TRI_FIRE);
+      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_ZIG_FIRE);
     }
 
     // in order to forecast the position of submarine
-    prevSubmarineX = submarine.x;
-    prevSubmarineY = submarine.y;
+    prevSubmarineX = submarine.x * (1.f/256);
+    prevSubmarineY = submarine.y * (1.f/256);
     
     // === move ===
     submarine.move(*this);
-    echo.reset(*this, round(submarine.x));
+    echo.reset(*this, submarine.fieldX());
     torpedo.move(*this);
     moveCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     moveCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
@@ -150,7 +150,10 @@ struct Context {
     for(byte i = 0; i < BULLET_MAX; ++i) {
       if(!submarine.exist()) { break; } // todo armer
       if(!bullets[i].exist()) { continue; }
-      if(Collision(bullets[i].x, bullets[i].y, bullets[i].W, bullets[i].H, submarine.x, submarine.y, submarine.W, submarine.H)) {
+      if(Collision(
+        bullets[i].fieldX(), bullets[i].fieldY(), bullets[i].W, bullets[i].H, 
+        submarine.fieldX(), submarine.fieldY(), submarine.W, submarine.H
+      )) {
         bullets[i].onHit(*this);
         submarine.onHit(*this);
       }
@@ -158,9 +161,9 @@ struct Context {
 
     // === draw ===
     // background
-    const int fieldX = -frameCount() / 16;
-    DrawWave(core, fieldX, frameCount());
-    DrawBottom(core, fieldX);
+    const int fx = -frameCount() / 16;
+    DrawWave(core, fx, frameCount());
+    DrawBottom(core, fx);
 
     // disp extralives
     core.drawBitmap(0, 4, bitmapExtraLives, 1);
@@ -204,57 +207,57 @@ struct Context {
     return gameoverCount >= 300;
   }
 
-  void addEcho(const float left, const float top, const float bottom) {
+  void addEcho(const int left, const char top, const char bottom) {
     echo.add(left, top, bottom);
   }
-  float getSubmarineAngle(const float bx, const float by) const {
-    return atan2(submarine.y - by, submarine.x - bx);
+  float getSubmarineAngle(const char bx, const char by) const {
+    return atan2(submarine.fieldY() - by, submarine.fieldX() - bx);
   }
   // FromX, FromY, BulletSpeed
-  float getFutureSubmarineAngle(const float fx, const float fy, const float bs) const {
-    const float tx = submarine.x;             // ToX (or TargetX)
-    const float ty = submarine.y;             // ToY
-    const float vx = tx - prevSubmarineX;     // VelocityX (of submarine)
-    const float vy = ty - prevSubmarineY;     // VelocityY
-    const float dr = atan2(ty - fy, tx - fx); // DiRection (to submarine)
+  float getFutureSubmarineAngle(const char fx, const char fy, const char bs) const {
+    const float tx = submarine.x * (1.f/256);  // ToX (or TargetX)
+    const float ty = submarine.y * (1.f/256);  // ToY
+    const float vx = tx - prevSubmarineX;      // VelocityX (of submarine)
+    const float vy = ty - prevSubmarineY;      // VelocityY
+    const float dr = atan2(ty - fy, tx - fx);  // DiRection (to submarine)
     
     const float ds = (tx - fx) * (tx - fx) + (ty - fy) * (ty - fy); // SquareDistance
-    const float rt = sqrt(ds) / bs;           // ReachTime
+    const float rt = sqrt(ds) / bs;            // ReachTime
     
-    const float px = vx * rt + tx;            // PredictedX (of future submarine)
-    const float py = vy * rt + ty;            // PredictedY
+    const float px = vx * rt + tx;             // PredictedX (of future submarine)
+    const float py = vy * rt + ty;             // PredictedY
     return atan2(py - fy, px - fx);
   }
 
   // spawn characters
-  void launchTorpedo(const int x, const int y) {
+  void launchTorpedo(const char x, const char y) {
     torpedo.launch(x, y);
   }
-  void fireAutoShot(const float x, const float y) {
+  void fireAutoShot(const char x, const char y) {
     const byte i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
     if(i >= 0) {
       autoShots[i].initialize(x, y);
     }
   }
-  void spawnBigEnemy(const float y) {
+  void spawnBigEnemy(const char y) {
     const byte i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     if(i >= 0) {
       bigEnemies[i].initialize(y);
     }
   }
-  void spawnSmallEnemy(const float y, const byte type) {
+  void spawnSmallEnemy(const char y, const byte type) {
     const byte i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     if(i >= 0) {
       smallEnemies[i].initialize(y, type);
     }
   }
-  void fireBullet(const float x, const float y, const float radian, const byte type) {
+  void fireBullet(const char x, const char y, const float radian, const byte type) {
     const byte i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
     if(i >= 0) {
       bullets[i].initialize(x, y, radian, type);
     }
   }
-  void spawnParticle(const float x, const float y, const byte type) {
+  void spawnParticle(const int x, const char y, const byte type) {
     // this init will not be inline
     if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
     const byte i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);

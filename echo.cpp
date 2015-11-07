@@ -14,14 +14,14 @@ void Echo::reset(Context& context, const byte subX) {
   submarineX = subX;
 }
 
-void Echo::add(const float left, const float top, const float bottom) {
+void Echo::add(const int left, const char top, const char bottom) {
   if(!acceptFlag) { return; }
   
-  const float dist = left - submarineX;
-  if(dist < 0.f) { return; }
+  const int dist = left - submarineX;
+  if(dist < 0) { return; }
   
-  const byte b = round(top) / ECHO_GRID_SIZE;
-  const byte e = round(bottom) / ECHO_GRID_SIZE;
+  const byte b = top    / ECHO_GRID_SIZE;
+  const byte e = bottom / ECHO_GRID_SIZE;
   byte newInte = (byte)((FIELD_WIDTH - dist) / 20);
   
   for(byte i = b; i <= e; ++i) {

@@ -28,8 +28,8 @@ struct GameCore {
   inline int frameCount() { return arduboy.frameCount; }
   inline bool pressed(byte button) { return arduboy.pressed(button); }
   inline void drawPixel(int x, int y, byte c) { arduboy.drawPixel(x, y, c); }
-  inline void drawBitmap(float x, float y, const byte* bitmap, byte c) {
-    arduboy.drawBitmap(round(x), round(y), bitmap+2, pgm_read_byte(bitmap), pgm_read_byte(bitmap+1), c);
+  inline void drawBitmap(int x, int y, const byte* bitmap, byte c) {
+    arduboy.drawBitmap(x, y, bitmap+2, pgm_read_byte(bitmap), pgm_read_byte(bitmap+1), c);
   }
   inline void fillRect(int x, int y, int w, int h, byte c) {
     arduboy.fillRect(x, y, w, h, c);

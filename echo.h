@@ -11,7 +11,7 @@ struct Context;
 
 struct Echo {
   void reset(Context& context, const byte subX);
-  void add(const float left, const float top, const float bottom);
+  void add(const int left, const char top, const char bottom);
   void draw(Context& context);
 
   private:
