@@ -23,6 +23,21 @@ struct Context {
     }
   }
   inline bool isGameover() const { return gameoverCount >= 0; }
+#ifndef LOW_MEMORY
+  bool lookForEnemy() const {
+    for(int i; i < BIG_ENEMY_MAX; ++i) {
+      if(bigEnemies[i].x > 0 && bigEnemies[i].x < SCREEN_WIDTH + 16) {
+        return true;
+      }
+    }
+    for(int i; i < SMALL_ENEMY_MAX; ++i) {
+      if(smallEnemies[i].x > 0 && smallEnemies[i].x < SCREEN_WIDTH + 16) {
+        return true;
+      }
+    }
+    return false;
+  }
+#endif
 
   void initialize() {
     frames = 0;
@@ -61,7 +76,7 @@ struct Context {
   void spawn() {
     if(frameCount() % 120 == 0) {
       spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
-      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), 0);
+      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_TRI_NOFIRE);
     }
   }
   void moveAll() {
@@ -102,19 +117,19 @@ struct Context {
         }
       }
     }
-
+#ifndef LOW_MEMORY
     // SmallEnemy vs Torpedo
     for(int i = 0; i < SMALL_ENEMY_MAX; ++i) {
       if(!torpedo.exist()) { break; }
       if(!smallEnemies[i].exist()) { continue; }
       if(Collision(
         smallEnemies[i].x, smallEnemies[i].y, smallEnemies[i].W, smallEnemies[i].H,
-        torpedo.x, torpedo.y - GRAZE_RANGE, torpedo.W, torpedo.H + GRAZE_RANGE*2
+        torpedo.x, torpedo.y - GRAZE_RANGE/2, torpedo.W, torpedo.H + GRAZE_RANGE
       )) {
         smallEnemies[i].onHit(*this);
       }
     }
-
+#endif
     // AutoShot
     for(int shotIdx = 0; shotIdx < AUTO_SHOT_MAX; ++shotIdx) {
       if(!autoShots[shotIdx].exist()) { continue; }
@@ -129,6 +144,7 @@ struct Context {
           smallEnemies[smallEnemyIdx].onHit(*this);
         }
       }
+#ifndef LOW_MEMORY
       // vs BigEnemy
       for(int bigEnemyIdx = 0; bigEnemyIdx < BIG_ENEMY_MAX; ++bigEnemyIdx) {
         if(!bigEnemies[bigEnemyIdx].exist()) { continue; }
@@ -139,6 +155,7 @@ struct Context {
           autoShots[shotIdx].onHit();
         }
       }
+#endif
     }
 
     // Bullet vs Submarine

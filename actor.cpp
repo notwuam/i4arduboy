@@ -66,9 +66,15 @@ void Submarine::move(Context& context) {
   }
 
   //firing auto shot
+#ifdef LOW_MEMORY
   if(context.frameCount() % 5 == 0) {
     context.fireAutoShot(x + 3, y - 3);
   }
+#else
+  if(context.lookForEnemy() && context.frameCount() % 5 == 0) {
+    context.fireAutoShot(x + 3, y - 3);
+  }
+#endif
 
   // updating armer timer
   if(armer > 0) { --armer; }
@@ -218,12 +224,33 @@ void SmallEnemy::initialize(const float y, const unsigned char type) {
 }
 
 void SmallEnemy::move(Context& context) {
-  static const unsigned char PERIOD = 96;
-  
-  // moving
-  static const float VY = 0.6f;
-  x += -VY * 2.4f;
-  y += (timer / (PERIOD / 4) % 2 == 0) ? VY : -VY;
+  const unsigned char period = (type / 2 == 0) ? 96 : 128;
+
+  switch(type / 2) {
+    // zigzag
+    case 0: {
+      // moving
+      static const float VY = 0.6f;
+      x += -VY * 2.4f;
+      y += (timer / (ZIG_PERIOD / 4) % 2 == 0) ? VY : -VY;
+      
+      // firing bullet
+      if(timer == 88 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2.f) {
+        context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
+      }
+    } break;
+
+    // triangle
+    default: {
+      // moving
+      x += -0.1f - 5.f / (timer % (period / 2) + 1);
+      
+      // firing bullet
+      if(timer == 64 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2.f) {
+        context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
+      }
+    } break;
+  }
 
   // frame out
   if(x + 12 < 0.f) {
@@ -233,21 +260,30 @@ void SmallEnemy::move(Context& context) {
   // setting sonar reaction
   context.addEcho(x, y, y+H);
 
-  // firing bullet
-  if(timer == 88 && x < SCREEN_WIDTH - W / 2.f) {
-    context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
-  }
-
   // updating timer
-  timer = (timer + 1) % PERIOD;
+  timer = (timer + 1) % (type == 0 ? ZIG_PERIOD : TRI_PERIOD);
 }
 
 void SmallEnemy::draw(Context& context) {
   if(x - 4 > SCREEN_WIDTH) { return; }
-  
-  const unsigned char* bitmaps[] = {bitmapZigEnemy0, bitmapZigEnemy1};
-  const int frame = timer / 24 % 2;
-  context.core.drawBitmap(x - 3, y - 3, bitmaps[frame], 2);
+  switch(type / 2) {
+    // zigzag
+    case 0: {
+      const unsigned char* bitmaps[] = {bitmapZigEnemy0, bitmapZigEnemy1};
+      const int frame = timer / (ZIG_PERIOD / 4) % 2;
+      context.core.drawBitmap(x - 3, y - 3, bitmaps[frame], 2);
+    } break;
+    
+    // triangle
+    default: {
+      const unsigned char* bitmaps[] = {bitmapTriEnemy0, bitmapTriEnemy1};
+      const int frame = (timer % (TRI_PERIOD / 2) < 24) ? 1 : 0;
+      context.core.drawBitmap(x - 3, y - 4, bitmaps[frame], 2);
+      if(frame == 1) {
+        context.core.drawBitmap(x + 7, y - 2, bitmapBoostEffect, 2);
+      }
+    } break;
+  }
   //context.core.getArduboy().drawRect(x, y, W, H, 0);
 }
 

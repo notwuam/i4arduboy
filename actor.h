@@ -82,6 +82,10 @@ struct SmallEnemy : public Actor {
   void move(Context& context);
   void draw(Context& context);
   void onHit(Context& context);
+
+  private:
+  static const unsigned char ZIG_PERIOD = 96;
+  static const unsigned char TRI_PERIOD = 128;
 };
 
 struct Bullet : public Actor {
