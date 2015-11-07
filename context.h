@@ -31,6 +31,7 @@ struct Context {
     submarine.initialize();
     torpedo.initialize();
     inactivateCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
+    inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     inactivateCharacters<Bullet>(bullets, BULLET_MAX);
     inactivateCharacters<Particle>(particles, PARTICLE_MAX);
     
@@ -58,7 +59,8 @@ struct Context {
   
   void spawn() {
     if(frameCount() % 120 == 0) {
-      spawnBigEnemy((frameCount()/120 * 30 + 10) % SCREEN_HEIGHT);
+      spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
+      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), 0);
     }
   }
   void moveAll() {
@@ -70,6 +72,7 @@ struct Context {
     echo.reset(*this, submarine.x);
     torpedo.move(*this);
     moveCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
+    moveCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     moveCharacters<Bullet>(bullets, BULLET_MAX);
     moveCharacters<Particle>(particles, PARTICLE_MAX);
   }
@@ -80,21 +83,33 @@ struct Context {
       if(!torpedo.exist()) { break; }
       if(!bigEnemies[i].exist()) { continue; }
       // check graze
-      if(
-        Collision(bigEnemies[i].x, bigEnemies[i].y, bigEnemies[i].W, bigEnemies[i].H, 
-          torpedo.x, torpedo.y - GRAZE_RANGE, torpedo.W, torpedo.H + GRAZE_RANGE*2)
-      ) {
+      if(Collision(
+        bigEnemies[i].x, bigEnemies[i].y, bigEnemies[i].W, bigEnemies[i].H, 
+        torpedo.x, torpedo.y - GRAZE_RANGE, torpedo.W, torpedo.H + GRAZE_RANGE*2
+      )) {
         // check hit
-        if(
-          Collision(bigEnemies[i].x, bigEnemies[i].y, bigEnemies[i].W, bigEnemies[i].H, 
-            torpedo.x, torpedo.y, torpedo.W, torpedo.H)
-        ) {
+        if(Collision(
+          bigEnemies[i].x, bigEnemies[i].y, bigEnemies[i].W, bigEnemies[i].H, 
+          torpedo.x, torpedo.y, torpedo.W, torpedo.H
+        )) {
           bigEnemies[i].onHit(*this);
           torpedo.onHit();
         }
         else {
           bigEnemies[i].onGraze();
         }
+      }
+    }
+
+    // SmallEnemy vs Torpedo
+    for(int i = 0; i < SMALL_ENEMY_MAX; ++i) {
+      if(!torpedo.exist()) { break; }
+      if(!smallEnemies[i].exist()) { continue; }
+      if(Collision(
+        smallEnemies[i].x, smallEnemies[i].y, smallEnemies[i].W, smallEnemies[i].H,
+        torpedo.x, torpedo.y - GRAZE_RANGE, torpedo.W, torpedo.H + GRAZE_RANGE*2
+      )) {
+        smallEnemies[i].onHit(*this);
       }
     }
 
@@ -130,6 +145,7 @@ struct Context {
     submarine.draw(*this);
     torpedo.draw(*this);
     drawCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
+    drawCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     drawCharacters<Bullet>(bullets, BULLET_MAX);
     drawCharacters<Particle>(particles, PARTICLE_MAX);
 
@@ -163,31 +179,31 @@ struct Context {
   }
 
   // spawn characters
-  bool tryLaunchTorpedo(const float sx, const float sy) {
-    torpedo.tryLaunch(sx, sy);
+  bool tryLaunchTorpedo(const float x, const float y) {
+    torpedo.tryLaunch(x, y);
   }
   void spawnBigEnemy(const float y) {
-    for(int i = 0; i < BIG_ENEMY_MAX; ++i) {
-      if(!bigEnemies[i].exist()) {
-        bigEnemies[i].initialize(y);
-        return;
-      }
+    const int i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
+    if(i >= 0) {
+      bigEnemies[i].initialize(y);
     }
   }
-  void fireBullet(const float sx, const float sy, const float radian, const unsigned char type) {
-    for(int i = 0; i < BULLET_MAX; ++i) {
-      if(!bullets[i].exist()) {
-        bullets[i].initialize(sx, sy, radian, type);
-        return;
-      }
+  void spawnSmallEnemy(const float y, const unsigned char type) {
+    const int i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
+    if(i >= 0) {
+      smallEnemies[i].initialize(y, type);
+    }
+  }
+  void fireBullet(const float x, const float y, const float radian, const unsigned char type) {
+    const int i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
+    if(i >= 0) {
+      bullets[i].initialize(x, y, radian, type);
     }
   }
   void spawnParticle(const float x, const float y, const unsigned char type) {
-    for(int i = 0; i < PARTICLE_MAX; ++i) {
-      if(!particles[i].exist()) {
-        particles[i].initialize(x, y, type);
-        return;
-      }
+    const int i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
+    if(i >= 0) {
+      particles[i].initialize(x, y, type);
     }
   }
 
@@ -207,16 +223,23 @@ struct Context {
       if(pool[i].exist()) { pool[i].draw(*this); }
     }
   }
+  template<typename T> int searchAvailableIndex(const T pool[], const int n) {
+    for(int i = 0; i < n; ++i) {
+      if(!pool[i].exist()) { return i; }
+    }
+    return -1;  // not found
+  }
   
   private:
   Echo echo;
   
-  Submarine submarine;
-  Torpedo   torpedo;
+  Submarine  submarine;
+  Torpedo    torpedo;
   
-  BigEnemy bigEnemies[BIG_ENEMY_MAX];
-  Bullet   bullets[BULLET_MAX];
-  Particle particles[PARTICLE_MAX];
+  BigEnemy   bigEnemies[BIG_ENEMY_MAX];
+  SmallEnemy smallEnemies[SMALL_ENEMY_MAX];
+  Bullet     bullets[BULLET_MAX];
+  Particle   particles[PARTICLE_MAX];
 
   unsigned long frames;
   float prevSubmarineX, prevSubmarineY;

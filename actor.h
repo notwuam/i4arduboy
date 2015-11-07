@@ -15,14 +15,14 @@ struct Actor {
   inline void inactivate() {
     x = EXIST_THRESHOLD;
   }
-  inline bool exist() {
+  inline bool exist() const {
     return x > EXIST_THRESHOLD;
   }
 };
 
 struct Submarine : public Actor {
-  static const int W = 10;
-  static const int H = 4;
+  static const char W = 10;
+  static const char H = 4;
   
   bool prevFire;
   char extraLives;
@@ -35,8 +35,8 @@ struct Submarine : public Actor {
 };
 
 struct Torpedo : public Actor {
-  static const int W = 10;
-  static const int H = 1;
+  static const char W = 10;
+  static const char H = 1;
 
   float vx;
 
@@ -50,8 +50,8 @@ struct Torpedo : public Actor {
 };
 
 struct BigEnemy : public Actor {
-  static const int W = 18;
-  static const int H = 6;
+  static const char W = 18;
+  static const char H = 6;
 
   bool grazed;
   unsigned char timer;
@@ -63,9 +63,22 @@ struct BigEnemy : public Actor {
   void onGraze() { grazed = true; }
 };
 
+struct SmallEnemy : public Actor {
+  static const char W = 2;
+  static const char H = 2;
+
+  unsigned char type;
+  unsigned char timer;
+
+  void initialize(const float y, const unsigned char type);
+  void move(Context& context);
+  void draw(Context& context);
+  void onHit(Context& context);
+};
+
 struct Bullet : public Actor {
-  static const int W = 1;
-  static const int H = 1;
+  static const char W = 1;
+  static const char H = 1;
   
   float angle;
   unsigned char type;

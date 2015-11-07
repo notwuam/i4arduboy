@@ -10,18 +10,18 @@
 struct Context;
 
 struct Echo {
-  void reset(Context& context, float subX);
-  void add(float left, float top, float bottom);
+  void reset(Context& context, const float subX);
+  void add(const float left, const float top, const float bottom);
   void draw(Context& context);
 
   private:
-  unsigned char distToIntensity(float dist) const {
+  unsigned char distToIntensity(const float dist) const {
     return (unsigned char)((FIELD_WIDTH - dist) / 20);
   }
 
   private:
   unsigned char intensities[ECHO_VERT_RESO];
-  bool  acceptFlag;
-  float submarineX;
+  unsigned char submarineX;
+  bool acceptFlag;
 };
 

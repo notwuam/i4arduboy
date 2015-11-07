@@ -186,6 +186,54 @@ void BigEnemy::onHit(Context& context) {
 }
 
 
+// === SmallEnemy ===
+
+void SmallEnemy::initialize(const float y, const unsigned char type) {
+  activate(FIELD_WIDTH, y);
+  this->type = type;
+  timer = 0;
+}
+
+void SmallEnemy::move(Context& context) {
+  static const unsigned char PERIOD = 96;
+  
+  // moving
+  static const float VY = 0.6f;
+  x += -VY * 2.4f;
+  y += (timer / (PERIOD / 4) % 2 == 0) ? VY : -VY;
+
+  // frame out
+  if(x + 12 < 0.f) {
+    inactivate();
+  }
+
+  // setting sonar reaction
+  context.addEcho(x, y, y+H);
+
+  // firing bullet
+  if(timer == 88 && x < SCREEN_WIDTH - W / 2.f) {
+    context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
+  }
+
+  // updating timer
+  timer = (timer + 1) % PERIOD;
+}
+
+void SmallEnemy::draw(Context& context) {
+  if(x - 4 > SCREEN_WIDTH) { return; }
+  
+  const unsigned char* bitmaps[] = {bitmapZigEnemy0, bitmapZigEnemy1};
+  const int frame = timer / 24 % 2;
+  context.core.drawBitmap(x - 3, y - 3, bitmaps[frame], 2);
+  //context.core.getArduboy().drawRect(x, y, W, H, 0);
+}
+
+void SmallEnemy::onHit(Context& context) {
+  context.spawnParticle(x - 5, y - 4, 0);
+  inactivate();
+}
+
+
 // === Bullet ===
 
 void Bullet::initialize(const float sx, const float sy, const float radian, const unsigned char type) {
