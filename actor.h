@@ -42,13 +42,18 @@ struct Submarine {
   void onHit(Context& context);
 };
 
-struct Torpedo : public Actor {
+struct Torpedo {
   static const byte W = 10;
   static const byte H = 1;
 
-  float vx;
+  int x;
+  char y;
+  int vx;
 
-  void launch(const float x, const float y);
+  inline void inactivate() { x = -64; }
+  inline bool exist() const { return x > -64; }
+  
+  void launch(const int x, const int y);
   void move(Context& context);
   void draw(Context& context);
   void onHit() { inactivate(); }

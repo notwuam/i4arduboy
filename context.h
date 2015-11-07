@@ -227,7 +227,7 @@ struct Context {
   }
 
   // spawn characters
-  void launchTorpedo(const float x, const float y) {
+  void launchTorpedo(const int x, const int y) {
     torpedo.launch(x, y);
   }
   void fireAutoShot(const float x, const float y) {

@@ -8,10 +8,8 @@
 // === Submarine ===
 
 void Submarine::initialize() {
-  x = W;
-  x <<= 8;
-  y = SCREEN_HEIGHT / 2;
-  y <<= 8;
+  x = W << 8;
+  y = (SCREEN_HEIGHT / 2) << 8;
   prevFire   = true;  // to prevent from launching a torpedo
   extraLives = START_LIVES;
   armer      = ARMER_FRAMES;
@@ -113,20 +111,19 @@ void Submarine::onHit(Context& context) {
 
 // === Torpedo ===
 
-void Torpedo::launch(const float x, const float y) {
+void Torpedo::launch(const int x, const int y) {
   if(!exist()) {
-    activate(x, y);
-    vx = 0.f;
+    this->x = x;
+    this->y = y;
+    vx = 0;
   }
 }
 
 void Torpedo::move(Context& context) {
-  static const float ACC = 0.5f;
-  static const float RSS = 0.1f;
-  
+  static const int ACC = 1 << 7;  // 0.5
   if(!exist()) { return; }
-  vx += ACC - RSS * vx;
-  x  += vx;
+  vx += ACC - (vx >> 4);
+  x  += vx >> 8;
   if(x >= FIELD_WIDTH) {
     inactivate();
   }
@@ -137,7 +134,7 @@ void Torpedo::draw(Context& context) {
   // body
   context.core.drawBitmap(x, y - 1, bitmapTorpedo, 2);
   // shockwave
-  if(vx > 3.2f) { // well accelerated
+  if(vx > 3 << 8) { // well accelerated
     const byte w = bitmapShockwave0[0];
     const byte h = bitmapShockwave0[1];
     context.core.drawBitmap(x -  8, y - h/2, bitmapShockwave0, 2);
