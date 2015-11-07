@@ -30,6 +30,7 @@ struct Context {
     
     submarine.initialize();
     torpedo.initialize();
+    inactivateCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     inactivateCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     inactivateCharacters<Bullet>(bullets, BULLET_MAX);
@@ -71,6 +72,7 @@ struct Context {
     submarine.move(*this);
     echo.reset(*this, submarine.x);
     torpedo.move(*this);
+    moveCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     moveCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     moveCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     moveCharacters<Bullet>(bullets, BULLET_MAX);
@@ -113,6 +115,32 @@ struct Context {
       }
     }
 
+    // AutoShot
+    for(int shotIdx = 0; shotIdx < AUTO_SHOT_MAX; ++shotIdx) {
+      if(!autoShots[shotIdx].exist()) { continue; }
+      // vs SmallEnemy
+      for(int smallEnemyIdx = 0; smallEnemyIdx < SMALL_ENEMY_MAX; ++smallEnemyIdx) {
+        if(!smallEnemies[smallEnemyIdx].exist()) { continue; }
+        if(Collision(
+          autoShots[shotIdx].x, autoShots[shotIdx].y, autoShots[shotIdx].W, autoShots[shotIdx].H,
+          smallEnemies[smallEnemyIdx].x, smallEnemies[smallEnemyIdx].y, smallEnemies[smallEnemyIdx].W, smallEnemies[smallEnemyIdx].H
+        )) {
+          autoShots[shotIdx].onHit();
+          smallEnemies[smallEnemyIdx].onHit(*this);
+        }
+      }
+      // vs BigEnemy
+      for(int bigEnemyIdx = 0; bigEnemyIdx < BIG_ENEMY_MAX; ++bigEnemyIdx) {
+        if(!bigEnemies[bigEnemyIdx].exist()) { continue; }
+        if(Collision(
+          autoShots[shotIdx].x, autoShots[shotIdx].y, autoShots[shotIdx].W, autoShots[shotIdx].H,
+          bigEnemies[bigEnemyIdx].x, bigEnemies[bigEnemyIdx].y, bigEnemies[bigEnemyIdx].W, bigEnemies[bigEnemyIdx].H
+        )) {
+          autoShots[shotIdx].onHit();
+        }
+      }
+    }
+
     // Bullet vs Submarine
     for(int i = 0; i < BULLET_MAX; ++i) {
       if(!submarine.exist()) { break; } // todo armer
@@ -142,6 +170,7 @@ struct Context {
     }
 
     // characters
+    drawCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     submarine.draw(*this);
     torpedo.draw(*this);
     drawCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
@@ -181,6 +210,12 @@ struct Context {
   // spawn characters
   bool tryLaunchTorpedo(const float x, const float y) {
     torpedo.tryLaunch(x, y);
+  }
+  void fireAutoShot(const float x, const float y) {
+    const int i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
+    if(i >= 0) {
+      autoShots[i].initialize(x, y);
+    }
   }
   void spawnBigEnemy(const float y) {
     const int i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
@@ -235,7 +270,8 @@ struct Context {
   
   Submarine  submarine;
   Torpedo    torpedo;
-  
+
+  AutoShot   autoShots[AUTO_SHOT_MAX];
   BigEnemy   bigEnemies[BIG_ENEMY_MAX];
   SmallEnemy smallEnemies[SMALL_ENEMY_MAX];
   Bullet     bullets[BULLET_MAX];

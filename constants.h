@@ -7,6 +7,7 @@
 #define FIELD_WIDTH      (SCREEN_WIDTH * 3)
 
 // each character numbers
+#define AUTO_SHOT_MAX    (2)
 #define BIG_ENEMY_MAX    (8)
 #define SMALL_ENEMY_MAX  (12)
 #define BULLET_MAX       (8)

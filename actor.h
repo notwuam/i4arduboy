@@ -44,9 +44,17 @@ struct Torpedo : public Actor {
   bool tryLaunch(const float sx, const float sy);
   void move(Context& context);
   void draw(Context& context);
-  void onHit() {
-    inactivate();
-  }
+  void onHit() { inactivate(); }
+};
+
+struct AutoShot : public Actor {
+  static const char W = 12;
+  static const char H = 10;
+
+  void initialize(const float x, const float y) { activate(x, y); }
+  void move(Context& context);
+  void draw(Context& context);
+  void onHit() { inactivate(); }
 };
 
 struct BigEnemy : public Actor {

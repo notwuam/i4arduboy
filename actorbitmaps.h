@@ -11,7 +11,6 @@ PROGMEM const unsigned char bitmapSubmarine[] = {
 PROGMEM const unsigned char bitmapTorpedo[] = {
   10, 3,
   0x02, 0x00, 0x07, 0x02, 0x02, 0x02, 0x02, 0x02, 0x07, 0x02
-  
 };
 
 // Shockwave0.png / 3x9
@@ -30,6 +29,12 @@ PROGMEM const unsigned char bitmapShockwave1[] = {
 PROGMEM const unsigned char bitmapShockwave2[] = {
   3, 9,
   0x44, 0x01, 0x44, 0x00, 0x01, 0x00
+};
+
+// AutoShot.png / 6x3
+PROGMEM const unsigned char bitmapAutoShot[] = {
+  6, 3,
+  0x05, 0x00, 0x05, 0x05, 0x05, 0x05
 };
 
 // CruEnemy0.png / 26x10
@@ -53,6 +58,12 @@ PROGMEM const unsigned char bitmapTriEnemy0[] = {
 PROGMEM const unsigned char bitmapTriEnemy1[] = {
   8, 8,
   0x04, 0x4C, 0x64, 0x1A, 0x5A, 0x46, 0xEF, 0xC3
+};
+
+// BoostEffect.png / 5x4
+PROGMEM const unsigned char bitmapBoostEffect[] = {
+  5, 4,
+  0x09, 0x09, 0x09, 0x00, 0x09
 };
 
 // ZigEnemy0.png / 9x7

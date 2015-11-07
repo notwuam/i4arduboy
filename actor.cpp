@@ -65,6 +65,11 @@ void Submarine::move(Context& context) {
     prevFire = false;
   }
 
+  //firing auto shot
+  if(context.frameCount() % 5 == 0) {
+    context.fireAutoShot(x + 3, y - 3);
+  }
+
   // updating armer timer
   if(armer > 0) { --armer; }
 }
@@ -134,6 +139,24 @@ void Torpedo::draw(Context& context) {
     context.core.drawBitmap(x - 24, y - h/2, bitmapShockwave2, 2);
   }
   //context.getArduboy.drawFastHLine(x, y, W, 0);
+}
+
+
+// === AutoShot ===
+
+void AutoShot::move(Context& context) {
+  // moving
+  x += 8.f;
+
+  // frame out
+  if(x > SCREEN_WIDTH) {
+    inactivate();
+  }
+}
+
+void AutoShot::draw(Context& context) {
+  context.core.drawBitmap(x + 2, y + 3, bitmapAutoShot, 2);
+  //context.core.getArduboy().drawRect(x, y, W, H, 1);
 }
 
 
