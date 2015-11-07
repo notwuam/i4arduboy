@@ -8,7 +8,10 @@
 // === Submarine ===
 
 void Submarine::initialize() {
-  activate(W, SCREEN_HEIGHT / 2.f);
+  x = W;
+  x <<= 8;
+  y = SCREEN_HEIGHT / 2;
+  y <<= 8;
   prevFire   = true;  // to prevent from launching a torpedo
   extraLives = START_LIVES;
   armer      = ARMER_FRAMES;
@@ -18,23 +21,23 @@ void Submarine::move(Context& context) {
   if(context.isGameover()) { return; }
   
   // control
-  static const float SPD   = 0.5f;
-  static const float SQRT2 = 0.7071067811f;
+  static const int SPD = 1 << 7;
+  static const int R2  = 90;  // 0.5/sqrt(2) / (1/256)
   if(context.core.pressed(BTN_U) && context.core.pressed(BTN_L)) {
-    x -= SPD * SQRT2;
-    y -= SPD * SQRT2;
+    x -= R2;
+    y -= R2;
   }
   else if(context.core.pressed(BTN_U) && context.core.pressed(BTN_R)) {
-    x += SPD * SQRT2;
-    y -= SPD * SQRT2;
+    x += R2;
+    y -= R2;
   }
   else if(context.core.pressed(BTN_D) && context.core.pressed(BTN_L)) {
-    x -= SPD * SQRT2;
-    y += SPD * SQRT2;
+    x -= R2;
+    y += R2;
   }
   else if(context.core.pressed(BTN_D) && context.core.pressed(BTN_R)) {
-    x += SPD * SQRT2;
-    y += SPD * SQRT2;
+    x += R2;
+    y += R2;
   }
   else if(context.core.pressed(BTN_U)) {
     y -= SPD;
@@ -50,14 +53,16 @@ void Submarine::move(Context& context) {
   }
 
   // clamping into field
-  static const byte MARGIN = 6;
-  x = Clamp(x, MARGIN - W / 2.f, SCREEN_WIDTH  - MARGIN - W / 2.f);
-  y = Clamp(y, MARGIN - H / 2.f, SCREEN_HEIGHT - MARGIN - H / 2.f);
+  static const int MARGIN = 6 << 8;
+  if(x < MARGIN) { x = MARGIN; }
+  if(x > (SCREEN_WIDTH << 8) - MARGIN) { x = (SCREEN_WIDTH << 8) - MARGIN; }
+  if(y < MARGIN) { y = MARGIN; }
+  if(y > (SCREEN_HEIGHT << 8) - MARGIN) { y = (SCREEN_HEIGHT << 8) - MARGIN; }
 
   // launching torpedo
   if(extraLives >= 0 && (context.core.pressed(BTN_A) || context.core.pressed(BTN_B))) {
     if(!prevFire) {
-      context.launchTorpedo(x + 10, y + 1);
+      context.launchTorpedo(fieldX() + 10, fieldY() + 1);
     }
     prevFire = true;
   }
@@ -68,11 +73,11 @@ void Submarine::move(Context& context) {
   //firing auto shot
 #ifdef LOW_MEMORY
   if(context.frameCount() % 5 == 0) {
-    context.fireAutoShot(x + 3, y - 3);
+    context.fireAutoShot(fieldX() + 3, fieldY() - 3);
   }
 #else
   if(context.lookForEnemy() && context.frameCount() % 5 == 0) {
-    context.fireAutoShot(x + 3, y - 3);
+    context.fireAutoShot(fieldX() + 3, fieldY() - 3);
   }
 #endif
 
@@ -82,9 +87,9 @@ void Submarine::move(Context& context) {
 
 void Submarine::draw(Context& context) {
   if(armer == 0 || (extraLives >= 0 && context.frameCount() / 3 % 2 == 0)) {
-    context.core.drawBitmap(x - 1, y - 2, bitmapSubmarine, 2);
+    context.core.drawBitmap(fieldX() - 1, fieldY() - 2, bitmapSubmarine, 2);
     if(context.frameCount() % ECHO_CYCLE > 30) {  // sustain: 30 frames
-      context.core.drawPixel(round(x + 6), round(y - 1), 1);
+      context.core.drawPixel(fieldX() + 6, fieldY() - 1, 1);
     }
   }
   //context.getArduboy().drawRect(x, y, W, H, 0);
@@ -348,8 +353,8 @@ void Particle::move(Context& context) {
 }
 
 void Particle::draw(Context& context) {
-  switch(type) {
-    default: {
+//  switch(type) {
+//    default: {
       if(limit > 8) {
         context.core.drawBitmap(x, y, bitmapExplosion0, 2);
       }
@@ -359,7 +364,7 @@ void Particle::draw(Context& context) {
       else {
         context.core.drawBitmap(x, y, bitmapExplosion2, 2);
       }
-    }
-  }
+//    }
+//  }
 }
 

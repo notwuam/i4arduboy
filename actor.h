@@ -6,7 +6,7 @@ typedef unsigned char byte;
 struct Context;
 
 struct Actor {
-  float x = EXIST_THRESHOLD;
+  float x;
   float y;
 
   inline void activate(const float x, const float y) {
@@ -21,14 +21,21 @@ struct Actor {
   }
 };
 
-struct Submarine : public Actor {
+struct Submarine {
   static const byte W = 10;
   static const byte H = 4;
   
+  int x;
+  int y;
   bool prevFire;
   char extraLives;
   byte armer;
 
+  inline void inactivate() { x = -(64 << 8); }
+  inline bool exist() const { return x > -(64 << 8); }
+  inline char fieldX() const { return x >> 8; }
+  inline char fieldY() const { return y >> 8; }
+  
   void initialize();
   void move(Context& context);
   void draw(Context& context);
