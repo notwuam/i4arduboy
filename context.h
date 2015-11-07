@@ -234,25 +234,25 @@ struct Context {
     torpedo.launch(x, y);
   }
   void fireAutoShot(const char x, const char y) {
-    const byte i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
+    const char i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
     if(i >= 0) {
       autoShots[i].initialize(x, y);
     }
   }
   void spawnBigEnemy(const char y) {
-    const byte i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
+    const char i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     if(i >= 0) {
       bigEnemies[i].initialize(y);
     }
   }
   void spawnSmallEnemy(const char y, const byte type) {
-    const byte i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
+    const char i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     if(i >= 0) {
       smallEnemies[i].initialize(y, type);
     }
   }
   void fireBullet(const char x, const char y, const float radian, const byte type) {
-    const byte i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
+    const char i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
     if(i >= 0) {
       bullets[i].initialize(x, y, radian, type);
     }
@@ -260,7 +260,7 @@ struct Context {
   void spawnParticle(const int x, const char y, const byte type) {
     // this init will not be inline
     if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
-    const byte i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
+    const char i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
     if(i >= 0) {
       particles[i].activate(x, y);
       particles[i].type = type;
@@ -286,7 +286,7 @@ struct Context {
       if(pool[i].exist()) { pool[i].draw(*this); }
     }
   }
-  template<typename T> inline byte searchAvailableIndex(const T pool[], const byte n) {
+  template<typename T> inline char searchAvailableIndex(const T pool[], const byte n) {
     for(byte i = 0; i < n; ++i) {
       if(!pool[i].exist()) { return i; }
     }

@@ -52,10 +52,6 @@ void Submarine::move(Context& context) {
 
   // clamping into field
   static const fixed MARGIN = 6 << 8;
-  /*if(x < MARGIN) { x = MARGIN; }
-  if(x > (SCREEN_WIDTH << 8) - MARGIN) { x = (SCREEN_WIDTH << 8) - MARGIN; }
-  if(y < MARGIN) { y = MARGIN; }
-  if(y > (SCREEN_HEIGHT << 8) - MARGIN) { y = (SCREEN_HEIGHT << 8) - MARGIN; }*/
   x = Clamp(x, MARGIN, (SCREEN_WIDTH  << 8) - MARGIN);
   y = Clamp(y, MARGIN, (SCREEN_HEIGHT << 8) - MARGIN);
 
@@ -148,6 +144,11 @@ void Torpedo::draw(Context& context) {
 
 
 // === AutoShot ===
+
+void AutoShot::initialize(const char x, const char y) {
+  this->x = x;
+  this->y = y;
+}
 
 void AutoShot::move(Context& context) {
   // moving

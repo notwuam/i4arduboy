@@ -2,25 +2,10 @@
 
 #include "constants.h"
 
+#define FIXED_EXIST_THRESHOLD (-(64 << 8))
 typedef unsigned char byte;
 typedef int fixed;
 struct Context;
-
-struct Actor {
-  float x;
-  float y;
-
-  inline void activate(const float x, const float y) {
-    this->x = x;
-    this->y = y;
-  }
-  inline void inactivate() {
-    x = EXIST_THRESHOLD;
-  }
-  inline bool exist() const {
-    return x > EXIST_THRESHOLD;
-  }
-};
 
 struct Submarine {
   static const byte W = 10;
@@ -31,8 +16,8 @@ struct Submarine {
   char  extraLives;
   byte  armer;
 
-  inline void inactivate() { x = -(64 << 8); }
-  inline bool exist() const { return x > -(64 << 8); }
+  inline void inactivate() { x = FIXED_EXIST_THRESHOLD; }
+  inline bool exist() const { return x > FIXED_EXIST_THRESHOLD; }
   inline char fieldX() const { return x >> 8; }
   inline char fieldY() const { return y >> 8; }
   
@@ -67,10 +52,7 @@ struct AutoShot {
 
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
-  void initialize(const char x, const char y) {
-    this->x = x;
-    this->y = y;
-  }
+  void initialize(const char x, const char y);
   void move(Context& context);
   void draw(Context& context);
   void onHit() { inactivate(); }
@@ -124,8 +106,8 @@ struct Bullet {
   
   inline char fieldX() const { return x >> 8; }
   inline char fieldY() const { return y >> 8; }
-  inline void inactivate() { x = -(64 << 8); }
-  inline bool exist() const { return x > -(64 << 8); }
+  inline void inactivate() { x = FIXED_EXIST_THRESHOLD; }
+  inline bool exist() const { return x > FIXED_EXIST_THRESHOLD; }
   void initialize(const char x, const char y, const float radian, const byte type);
   void move(Context& context);
   void draw(Context& context);
