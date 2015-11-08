@@ -4,7 +4,7 @@
 #include "constants.h"
 #include "util.h"
 #include "actor.h"
-#include "echo.h"
+#include "modules.h"
 #include "systembitmaps.h"
 
 struct Submarine;
@@ -13,6 +13,7 @@ struct Torpedo;
 struct Context {
   GameCore& core;
   Echo echo;
+  Platoons platoons;
   
   Context(GameCore& core) : core(core) {
   }
@@ -58,15 +59,18 @@ struct Context {
     inactivateCharacters<Particle>(particles, PARTICLE_MAX);
     
     echo.reset(*this, 0);
+    platoons.initialize();
 
     randomSeed(core.frameCount());
   }
   bool loop() {
     // spawn
-    if(frameCount() % 120 == 0) {
-      spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
-      spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_ZIG_FIRE);
+    if(frameCount() % 180 == 0) {
+      //spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
+      //spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_ZIG_NOFIRE | (3 << 4));
+      platoons.set(random(8, SCREEN_HEIGHT - 8), SENEMY_TRI_FIRE);
     }
+    platoons.spawn(*this);
 
     // in order to forecast the position of submarine
     prevSubmarineX = submarine.x * (1.f/256);
@@ -243,11 +247,13 @@ struct Context {
       bigEnemies[i].initialize(y);
     }
   }
-  void spawnSmallEnemy(const char y, const byte type) {
+  bool spawnSmallEnemy(const char y, const byte type) {
     const char i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     if(i >= 0) {
       smallEnemies[i].initialize(y, type);
+      return false;  // successfully
     }
+    return true; // error
   }
   void fireBullet(const char x, const char y, const float radian, const byte type) {
     const char i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);

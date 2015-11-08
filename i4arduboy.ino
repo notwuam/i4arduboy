@@ -50,9 +50,9 @@ void loop() {
   
   /*
   char text[16];
-  sprintf(text, "%c%c%c", EEPROM.read(102), EEPROM.read(103),  EEPROM.read(104));
-  core.setCursor(10, 10);
-  core.print(text);
+  sprintf(text, "%d,%d,%d", getType(), canFire(), getPlatoon());
+  context.core.setCursor(10, 10);
+  context.core.print(text);
   */
   
   core.display();

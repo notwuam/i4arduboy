@@ -92,6 +92,10 @@ struct SmallEnemy {
   void draw(Context& context);
   void onHit(Context& context);
 
+  inline byte getType() const { return (type >> 1) & 0x7; }
+  inline bool canFire() const { return (type & 1) == 0; }
+  inline byte getPlatoon() const { return type >> 4; }
+
   private:
   static const byte ZIG_PERIOD = 96;
   static const byte TRI_PERIOD = 128;

@@ -1,6 +1,6 @@
 #include "actor.h"
 #include "context.h"
-#include "echo.h"
+#include "modules.h"
 #include "util.h"
 #include "actorbitmaps.h"
 #include "scores.h"
@@ -52,8 +52,8 @@ void Submarine::move(Context& context) {
 
   // clamping into field
   static const fixed MARGIN = 6 << 8;
-  x = Clamp(x, MARGIN, (SCREEN_WIDTH  << 8) - MARGIN);
-  y = Clamp(y, MARGIN, (SCREEN_HEIGHT << 8) - MARGIN);
+  x = Clamp(x, 0, (SCREEN_WIDTH << 8) - MARGIN);
+  y = Clamp(y, MARGIN - (H << 8), (SCREEN_HEIGHT << 8) - MARGIN);
 
   // launching torpedo
   if(extraLives >= 0 && (context.core.pressed(BTN_A) || context.core.pressed(BTN_B))) {
@@ -232,9 +232,9 @@ void SmallEnemy::initialize(const char y, const byte type) {
 }
 
 void SmallEnemy::move(Context& context) {
-  const byte period = (type / 2 == 0) ? 96 : 128;
+  const byte period = (getType() == 0) ? ZIG_PERIOD : TRI_PERIOD;
 
-  switch(type / 2) {
+  switch(getType()) {
     // zigzag
     case 0: {
       // moving
@@ -247,7 +247,7 @@ void SmallEnemy::move(Context& context) {
         --x;
       }
       // firing bullet
-      if(timer == 88 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2) {
+      if(timer == 80 && canFire() && x < SCREEN_WIDTH - W / 2) {
         context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
       }
     } break;
@@ -255,7 +255,7 @@ void SmallEnemy::move(Context& context) {
     // triangle
     default: {
       // moving
-      if(timer % 10 == 0) { --x; }  // 0.1
+      if(timer % 6 == 0) { --x; }
       const int half = period / 2;
       int tmp = half - timer % half;
       tmp = tmp*tmp / (half*half/4) - 1;
@@ -263,7 +263,7 @@ void SmallEnemy::move(Context& context) {
       x -= tmp;
       
       // firing bullet
-      if(timer == 0 && type % 2 == 0 && x < SCREEN_WIDTH - W / 2) {
+      if(timer == 64 && canFire() && x < SCREEN_WIDTH && x > SCREEN_WIDTH / 2) {
         context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
       }
     } break;
@@ -271,6 +271,7 @@ void SmallEnemy::move(Context& context) {
 
   // frame out
   if(x + 12 < 0) {
+    context.platoons.checkBonus(getPlatoon(), false);
     inactivate();
   }
 
@@ -278,12 +279,12 @@ void SmallEnemy::move(Context& context) {
   context.echo.add(x, y, y+H);
 
   // updating timer
-  timer = (timer + 1) % (type == 0 ? ZIG_PERIOD : TRI_PERIOD);
+  timer = (timer + 1) % period;
 }
 
 void SmallEnemy::draw(Context& context) {
   if(x - 4 > SCREEN_WIDTH) { return; }
-  switch(type / 2) {
+  switch(getType()) {
     // zigzag
     case 0: {
       const byte* bitmaps[] = {bitmapZigEnemy0, bitmapZigEnemy1};
@@ -306,6 +307,10 @@ void SmallEnemy::draw(Context& context) {
 
 void SmallEnemy::onHit(Context& context) {
   context.spawnParticle(round(x) - 5, round(y) - 4, 0);
+  if(context.platoons.checkBonus(getPlatoon(), true)) {
+    context.core.setCursor(10, 10);
+    context.core.print("B");
+  }
   inactivate();
 }
 
