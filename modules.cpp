@@ -24,7 +24,7 @@ void Echo::add(const int left, const char top, const char bottom) {
   
   const byte b = top    / ECHO_GRID_SIZE;
   const byte e = bottom / ECHO_GRID_SIZE;
-  byte newInte = (byte)((FIELD_WIDTH - dist) / 16);
+  byte newInte = (byte)((FIELD_WIDTH - dist) / ECHO_HORI_RESO);
   
   for(byte i = b; i <= e; ++i) {
     if(newInte > intensities[i]) {

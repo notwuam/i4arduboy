@@ -166,6 +166,9 @@ struct Context {
     }
 
     // === draw ===
+#ifndef LOW_MEMORY
+    core.updateQuake();
+#endif
     // background
     const int fx = -frameCount() / 16;
     DrawWave(core, fx, frameCount());

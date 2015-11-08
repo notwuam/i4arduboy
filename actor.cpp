@@ -211,7 +211,6 @@ void BigEnemy::draw(Context& context) {
 
 void BigEnemy::onHit(Context& context) {
   context.spawnParticle(x, y, 0);
-  context.core.playScore(bing);
   // add score
   context.addScore(10);
   if(x > SCREEN_WIDTH) {  // far bonus
@@ -221,7 +220,8 @@ void BigEnemy::onHit(Context& context) {
 #ifndef LOW_MEMORY
   if(x < SCREEN_WIDTH + 20) {
     context.removeAllBullets();
-    // ToDo: quake
+    context.core.setQuake();
+    context.core.playScore(bing);
   }
 #endif
   // reset

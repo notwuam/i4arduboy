@@ -7,6 +7,7 @@ struct Context;
 
 #define ECHO_GRID_SIZE (3)
 #define ECHO_VERT_RESO (SCREEN_HEIGHT / ECHO_GRID_SIZE)
+#define ECHO_HORI_RESO (16)
 #define ECHO_CYCLE     (60)
 
 struct Echo {
