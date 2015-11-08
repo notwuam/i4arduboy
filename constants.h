@@ -9,8 +9,8 @@
 // each character numbers
 #define AUTO_SHOT_MAX    (2)
 #define BIG_ENEMY_MAX    (8)
-#define SMALL_ENEMY_MAX  (16)
-#define BULLET_MAX       (16)
+#define SMALL_ENEMY_MAX  (20)
+#define BULLET_MAX       (8)
 #define PARTICLE_MAX     (8)
 
 // submarine settings

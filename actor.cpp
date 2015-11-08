@@ -212,12 +212,19 @@ void BigEnemy::draw(Context& context) {
 void BigEnemy::onHit(Context& context) {
   context.spawnParticle(x, y, 0);
   context.core.playScore(bing);
+  // add score
+  context.addScore(10);
+  if(x > SCREEN_WIDTH) {  // far bonus
+    context.addScore((x - SCREEN_WIDTH) * 10 / (SCREEN_WIDTH * 2));
+  }
+  // near
 #ifndef LOW_MEMORY
   if(x < SCREEN_WIDTH + 20) {
     context.removeAllBullets();
     // ToDo: quake
   }
 #endif
+  // reset
   inactivate();
 }
 
@@ -307,9 +314,9 @@ void SmallEnemy::draw(Context& context) {
 
 void SmallEnemy::onHit(Context& context) {
   context.spawnParticle(round(x) - 5, round(y) - 4, 0);
+  context.addScore(1);
   if(context.platoons.checkBonus(getPlatoon(), true)) {
-    context.core.setCursor(10, 10);
-    context.core.print("B");
+    context.addScore(10);
   }
   inactivate();
 }

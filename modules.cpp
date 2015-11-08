@@ -24,7 +24,7 @@ void Echo::add(const int left, const char top, const char bottom) {
   
   const byte b = top    / ECHO_GRID_SIZE;
   const byte e = bottom / ECHO_GRID_SIZE;
-  byte newInte = (byte)((FIELD_WIDTH - dist) / 20);
+  byte newInte = (byte)((FIELD_WIDTH - dist) / 16);
   
   for(byte i = b; i <= e; ++i) {
     if(newInte > intensities[i]) {
@@ -77,12 +77,14 @@ void Platoons::spawn(Context& context) {
         status[i] = 0;
       }
     }
-    ++timers[i];
+    if(timers[i] < 0xff) {
+      ++timers[i];
+    }
   }
 }
 
 bool Platoons::checkBonus(const byte idx, bool killed) {
-  if(inUse(idx)) { return false; }
+  if(!inUse(idx)) { return false; }
   
   // count
   ++status[idx];

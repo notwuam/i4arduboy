@@ -48,6 +48,7 @@ struct Context {
 
   void initialize() {
     frames = 0;
+    score  = 0;
     gameoverCount = -1;
     
     submarine.initialize();
@@ -65,8 +66,8 @@ struct Context {
   }
   bool loop() {
     // spawn
-    if(frameCount() % 180 == 0) {
-      //spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
+    if(frameCount() % 240 == 0) {
+      spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
       //spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_ZIG_NOFIRE | (3 << 4));
       platoons.set(random(8, SCREEN_HEIGHT - 8), SENEMY_TRI_FIRE);
     }
@@ -172,9 +173,14 @@ struct Context {
 
     // disp extralives
     core.drawBitmap(0, 4, bitmapExtraLives, 1);
-    char text[2];
+    char text[6];
     sprintf(text, "%d", submarine.extraLives < 0 ? 0 : submarine.extraLives);
     core.setCursor(10, 0);
+    core.print(text);
+
+    // disp score
+    sprintf(text, "%05d", score);
+    core.setCursor(SCREEN_WIDTH/2 - 15, 0);
     core.print(text);
     
     // echo
@@ -212,6 +218,14 @@ struct Context {
     return gameoverCount >= 300;
   }
 
+  void addScore(unsigned int plus) {
+    if(score + plus < score) {
+      score = 0xffff; // count stop
+    }
+    else {
+      score += plus;
+    }
+  }
   float getSubmarineAngle(const char bx, const char by) const {
     return atan2(submarine.fieldY() - by, submarine.fieldX() - bx);
   }
@@ -308,6 +322,7 @@ struct Context {
   Particle   particles[PARTICLE_MAX];
 
   unsigned long frames;
+  unsigned int  score;
   float prevSubmarineX, prevSubmarineY;
   int   gameoverCount;
 };

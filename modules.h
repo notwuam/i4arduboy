@@ -21,7 +21,7 @@ struct Echo {
 };
 
 
-#define PLATOON_MAX        (4)
+#define PLATOON_MAX        (5)
 #define PLATOON_CONSISTS   (4)
 #define PLATOON_USING_MASK (0x80)
 #define PLATOON_COUNT_MASK (0x7)
