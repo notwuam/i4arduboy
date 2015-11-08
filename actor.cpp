@@ -210,11 +210,10 @@ void BigEnemy::draw(Context& context) {
 }
 
 void BigEnemy::onHit(Context& context) {
-  context.spawnParticle(x, y, 0);
   // add score
   context.addScore(10);
   if(x > SCREEN_WIDTH) {  // far bonus
-    context.addScore((x - SCREEN_WIDTH) * 10 / (SCREEN_WIDTH * 2));
+    context.addScore((x - SCREEN_WIDTH) * 10 / (FIELD_WIDTH - SCREEN_WIDTH));
   }
   // near
 #ifndef LOW_MEMORY
@@ -222,6 +221,8 @@ void BigEnemy::onHit(Context& context) {
     context.removeAllBullets();
     context.core.setQuake();
     context.core.playScore(bing);
+    context.spawnParticle(x + random(-2,  8), y + random(-4, 4), 0);
+    context.spawnParticle(x + random( 8, 18), y + random(-4, 4), 0);
   }
 #endif
   // reset
