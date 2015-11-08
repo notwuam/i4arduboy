@@ -191,7 +191,7 @@ void BigEnemy::move(Context& context) {
   }
 
   // setting sonar reaction
-  context.addEcho(x, y, y+H);
+  context.echo.add(x, y, y+H);
 
   // firing bullet
   if(timer == 0 && x < SCREEN_WIDTH - W / 2) {
@@ -275,7 +275,7 @@ void SmallEnemy::move(Context& context) {
   }
 
   // setting sonar reaction
-  context.addEcho(x, y, y+H);
+  context.echo.add(x, y, y+H);
 
   // updating timer
   timer = (timer + 1) % (type == 0 ? ZIG_PERIOD : TRI_PERIOD);

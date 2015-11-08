@@ -12,6 +12,7 @@ struct Torpedo;
 
 struct Context {
   GameCore& core;
+  Echo echo;
   
   Context(GameCore& core) : core(core) {
   }
@@ -207,9 +208,6 @@ struct Context {
     return gameoverCount >= 300;
   }
 
-  void addEcho(const int left, const char top, const char bottom) {
-    echo.add(left, top, bottom);
-  }
   float getSubmarineAngle(const char bx, const char by) const {
     return atan2(submarine.fieldY() - by, submarine.fieldX() - bx);
   }
@@ -294,8 +292,6 @@ struct Context {
   }
   
   private:
-  Echo echo;
-  
   Submarine  submarine;
   Torpedo    torpedo;
 
