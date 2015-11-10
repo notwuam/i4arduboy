@@ -1,5 +1,5 @@
 #include "gamecore.h"
-#include "systembitmaps.h"
+#include "assets.h"
 
 bool Collision(
   const int x1, const char y1, const byte w1, const byte h1, 

@@ -5,8 +5,7 @@
 #include "util.h"
 #include "actor.h"
 #include "modules.h"
-#include "systembitmaps.h"
-#include "scores.h"
+#include "assets.h"
 
 struct Submarine;
 struct Torpedo;

@@ -2,8 +2,7 @@
 #include "context.h"
 #include "modules.h"
 #include "util.h"
-#include "actorbitmaps.h"
-#include "scores.h"
+#include "assets.h"
 
 // === Submarine ===
 

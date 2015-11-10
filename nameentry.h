@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gamecore.h"
-#include "scores.h"
+#include "assets.h"
 
 struct NameEntry {
   void onEntry(byte rank, unsigned int score) {

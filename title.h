@@ -2,7 +2,7 @@
 
 #include "gamecore.h"
 #include "util.h"
-#include "systembitmaps.h"
+#include "assets.h"
 
 enum {
   TITLE_NOINPUT = 0,
