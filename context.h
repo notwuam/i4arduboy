@@ -281,14 +281,15 @@ struct Context {
     }
   }
   void spawnParticle(const int x, const char y, const byte type) {
-    // this init will not be inline
+    // this function can not be inline
     if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
     const char i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
     if(i >= 0) {
       particles[i].activate(x, y);
       particles[i].type = type;
       switch(type) {
-        default: particles[i].limit = 12; break;
+        case PARTICLE_EXPLOSION: particles[i].limit = 12; break;
+        default:                 particles[i].limit = 50; break;
       }
     }
   }

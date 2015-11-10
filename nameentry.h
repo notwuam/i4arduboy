@@ -82,7 +82,8 @@ struct NameEntry {
       text[0] = 27;
       core.setCursor(7 * W + BX, 3 * H + BY);
       core.print(text);
-      // enter (ToDo)
+      // enter
+      core.drawBitmap(9 * W + BX, 3 * H + BY, bitmapOk, 1);
       // cursor
       if(exitCount < 0) {
         core.drawCircle(kbCursor % COLUMN * W + BX + 2, kbCursor / COLUMN * H + BY + 3, 5, 1);

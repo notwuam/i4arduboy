@@ -17,6 +17,11 @@ enum {
   SENEMY_TRI_NOFIRE,
 };
 
+enum {
+  PARTICLE_EXPLOSION = 0,
+  PARTICLE_TEN_POINT,
+};
+
 typedef unsigned char byte;
 typedef int fixed;
 struct Context;

@@ -86,7 +86,7 @@ void Submarine::draw(Context& context) {
 void Submarine::onHit(Context& context) {
   if(armer <= 0) {
     if(extraLives >= 0) {
-      context.spawnParticle(fieldX() - 2, fieldY() - 4, 0);
+      context.spawnParticle(fieldX() - 2, fieldY() - 4, PARTICLE_EXPLOSION);
       context.core.tone(523, 250);
     }
     --extraLives;
@@ -219,8 +219,8 @@ void BigEnemy::onHit(Context& context) {
     context.removeAllBullets();
     context.core.setQuake();
     context.core.playScore(bing); // ToDo: another sfx
-    context.spawnParticle(x + random(-2,  8), y + random(-4, 4), 0);
-    context.spawnParticle(x + random( 8, 18), y + random(-4, 4), 0);
+    context.spawnParticle(x + random(-2,  8), y + random(-4, 4), PARTICLE_EXPLOSION);
+    context.spawnParticle(x + random( 8, 18), y + random(-4, 4), PARTICLE_EXPLOSION);
   }
 #endif
   // reset
@@ -312,9 +312,10 @@ void SmallEnemy::draw(Context& context) {
 }
 
 void SmallEnemy::onHit(Context& context) {
-  context.spawnParticle(round(x) - 5, round(y) - 4, 0);
+  context.spawnParticle(round(x) - 5, round(y) - 4, PARTICLE_EXPLOSION);
   context.addScore(1);
   if(context.platoons.checkBonus(getPlatoon(), true)) {
+    context.spawnParticle(round(x) - 2, round(y) - 2, PARTICLE_TEN_POINT);
     context.addScore(10);
   }
   inactivate();
@@ -378,8 +379,8 @@ void Particle::move(Context& context) {
 }
 
 void Particle::draw(Context& context) {
-//  switch(type) {
-//    default: {
+  switch(type) {
+    case 0: {
       if(limit > 8) {
         context.core.drawBitmap(x, y, bitmapExplosion0, 2);
       }
@@ -389,7 +390,11 @@ void Particle::draw(Context& context) {
       else {
         context.core.drawBitmap(x, y, bitmapExplosion2, 2);
       }
-//    }
-//  }
+    } break;
+    
+    default: {
+      context.core.drawBitmap(x, y, bitmapTen, 2);
+    } break;
+  }
 }
 
