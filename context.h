@@ -6,6 +6,7 @@
 #include "actor.h"
 #include "modules.h"
 #include "systembitmaps.h"
+#include "scores.h"
 
 struct Submarine;
 struct Torpedo;
@@ -47,7 +48,7 @@ struct Context {
   }
 #endif
 
-  void initialize() {
+  void onEntry() {
     frames = 0;
     score  = 0;
     gameoverCount = -1;
@@ -64,6 +65,7 @@ struct Context {
     platoons.initialize();
 
     randomSeed(core.frameCount());
+    core.playScore(bing); // ToDo: another sfx
   }
   bool loop() {
     // spawn

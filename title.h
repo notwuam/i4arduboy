@@ -15,6 +15,10 @@ typedef unsigned char byte;
 struct GameCore;
 
 struct Title {
+  void onEntry() {
+    waitTimer = SCENE_ENTRY_WAIT; // for disabling input for a while
+  }
+  
   byte loop(GameCore& core) {
     // controls
     // up
@@ -28,7 +32,7 @@ struct Title {
       if(cursor > TITLE_DISP_RANKING) { cursor = TITLE_START_GAME; }
     }
     // enter
-    if(core.pushed(BTN_A) || core.pushed(BTN_B)) {
+    if((core.pushed(BTN_A) || core.pushed(BTN_B)) && waitTimer <= 0) {
       if(cursor == TITLE_TOGGLE_SOUND) {
         core.soundOn = !core.soundOn;
       }
@@ -59,11 +63,13 @@ struct Title {
     // cursor
     core.setCursor(63, (cursor-1) * 13 + 15);
     core.print(">");
-    
+
+    if(waitTimer > 0) { --waitTimer; }
     return TITLE_NOINPUT;
   }
 
   private:
-  byte cursor = TITLE_START_GAME;
+  byte cursor    = TITLE_START_GAME;
+  byte waitTimer = 0;
 };
 

@@ -27,16 +27,24 @@ struct Ranking {
 #endif
   }
   
+  void onEntry() {
+    waitTimer = SCENE_ENTRY_WAIT; // for disabling input for a while
+  }
+  
   bool loop(GameCore& core) {
-    if(core.pushed(BTN_A) || core.pushed(BTN_B)) {
+    if((core.pushed(BTN_A) || core.pushed(BTN_B)) && waitTimer <= 0) {
       return true;
     }
+
+    // draw
     char text[16];
     for(byte i = 0; i < RANKING_ENTRY_MAX; ++i) {
       sprintf(text, "%1d %c%c%c %05d", i+1, names[i*3], names[i*3+1], names[i*3+2], scores[i]);
       core.setCursor(0, i*8);
       core.print(text);
     }
+    
+    if(waitTimer > 0) { --waitTimer; }
     return false;
   }
   
@@ -72,5 +80,6 @@ struct Ranking {
   private:
   unsigned int scores[RANKING_ENTRY_MAX];
   char names[RANKING_ENTRY_MAX * RANKING_NAME_LEN];
+  byte waitTimer;
 };
 

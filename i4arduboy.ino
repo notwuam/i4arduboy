@@ -26,10 +26,7 @@ byte scene = SCENE_TITLE;
 void setup() {
   //Serial.begin(9600);
   core.setup();
-  context.initialize();
   ranking.initialize();
-  
-  nameEntry.initialize(1, 3000); // test
 }
 
 void loop() {
@@ -46,11 +43,12 @@ void loop() {
     case SCENE_TITLE: {
       switch(title.loop(core)) {
         case TITLE_START_GAME: {
-          context.initialize();
+          context.onEntry();
           scene = SCENE_GAME;
         } break;
           
         case TITLE_DISP_RANKING: {
+          ranking.onEntry();
           scene = SCENE_RANKING;
         } break;
         
@@ -62,16 +60,18 @@ void loop() {
       if(context.loop()) {
         // check high score
         const byte rank = ranking.getRank(context.getScore());
-        if(rank < RANKING_ENTRY_MAX) {
-          nameEntry.initialize(rank, context.getScore());
+        if(rank < RANKING_ENTRY_MAX && context.getScore() > 0) {
+          nameEntry.onEntry(rank, context.getScore());
           scene = SCENE_NAME_ENTRY;
         }
         else {
+          ranking.onEntry();
           scene = SCENE_TITLE;  // didnt rank in
         }
       }
       // A+B+Left to terminate
       if(core.pressed(BTN_A) && core.pressed(BTN_B) && core.pressed(BTN_L)) {
+        title.onEntry();
         scene = SCENE_TITLE;
       }
     } break;
@@ -79,12 +79,14 @@ void loop() {
     case SCENE_NAME_ENTRY: {
       if(nameEntry.loop(core)) {
         ranking.enterScore(nameEntry.getScore(), nameEntry.getName());
+        title.onEntry();
         scene = SCENE_TITLE;
       }
     } break;
 
     default: {
       if(ranking.loop(core)) {
+        title.onEntry();
         scene = SCENE_TITLE;
       }
     } break;

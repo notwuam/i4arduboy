@@ -28,3 +28,5 @@
 #define START_LIVES      (2)
 #define ARMER_FRAMES     (90)
 
+#define SCENE_ENTRY_WAIT (30)
+

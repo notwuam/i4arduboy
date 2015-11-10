@@ -4,15 +4,16 @@
 #include "scores.h"
 
 struct NameEntry {
-  void initialize(byte rank, unsigned int score) {
+  void onEntry(byte rank, unsigned int score) {
     name[0] = name[1] = name[2] = ' ';
     nameCursor  = 0;
     kbCursor    = 10;
     this->rank  = rank;
     this->score = score;
     exitCount   = -1;
+    waitTimer   = SCENE_ENTRY_WAIT; // for disabling input for a while
   }
-
+  
   bool loop(GameCore& core) {
     static const byte COLUMN = 10;
     static const byte ROW    = 4;
@@ -35,7 +36,7 @@ struct NameEntry {
         else { kbCursor += 1; }
       }
       // entry character
-      if(core.pushed(BTN_A)) {
+      if(core.pushed(BTN_A) && waitTimer <= 0) {
         if(kbCursor < 36 && nameCursor < 3) {
           entryChar(core, kbCursor < 10 ? kbCursor + '0' : kbCursor + 'A' - 10);
         }
@@ -114,6 +115,7 @@ struct NameEntry {
       core.print(text);
     }
 
+    if(waitTimer > 0) { --waitTimer; }
     // exit
     if(exitCount >= 0) { ++exitCount; }
     if(exitCount >= 150) { return true; }
@@ -145,5 +147,6 @@ struct NameEntry {
   byte rank;
   unsigned int score;
   int  exitCount;
+  byte waitTimer;
 };
 
