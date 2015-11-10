@@ -15,7 +15,20 @@ struct Ranking {
     // > is 5 bytes long:  3 bytes for initials and two bytes for score.
     int baseAddress = EEPROM_FILE_INDEX * 5 * 10;
     for(byte i = 0; i < RANKING_ENTRY_MAX; ++i) {
-      // ToDo: load from eeprom
+      const int entryAddress = baseAddress + i * EEPROM_ENTRY_BYTES;
+      scores[i]  = EEPROM.read(entryAddress) << 8;
+      scores[i] |= EEPROM.read(entryAddress + 1);
+      if(scores[i] == 0xffff) {
+        scores[i] = 0;
+        names[i*RANKING_NAME_LEN  ] = ' ';
+        names[i*RANKING_NAME_LEN+1] = ' ';
+        names[i*RANKING_NAME_LEN+2] = ' ';
+      }
+      else {
+        names[i*RANKING_NAME_LEN  ] = (char)EEPROM.read(entryAddress + 2);
+        names[i*RANKING_NAME_LEN+1] = (char)EEPROM.read(entryAddress + 3);
+        names[i*RANKING_NAME_LEN+2] = (char)EEPROM.read(entryAddress + 4);
+      }
     }
 #else
     for(byte i = 0; i < RANKING_ENTRY_MAX; ++i) {
@@ -32,15 +45,20 @@ struct Ranking {
   }
   
   bool loop(GameCore& core) {
+    // return title menu
     if((core.pushed(BTN_A) || core.pushed(BTN_B)) && waitTimer <= 0) {
       return true;
     }
 
     // draw
+    // background
+    DrawWave(core, 0, core.frameCount());
+    DrawBottom(core, 0);
+    // entries
     char text[16];
     for(byte i = 0; i < RANKING_ENTRY_MAX; ++i) {
-      sprintf(text, "%1d %c%c%c %05d", i+1, names[i*3], names[i*3+1], names[i*3+2], scores[i]);
-      core.setCursor(0, i*8);
+      sprintf(text, "%1d  %c%c%c  %05d", i+1, names[i*RANKING_NAME_LEN], names[i*RANKING_NAME_LEN + 1], names[i*RANKING_NAME_LEN + 2], scores[i]);
+      core.setCursor(26, i * 10 + 9);
       core.print(text);
     }
     
@@ -62,18 +80,27 @@ struct Ranking {
     if(rank >= RANKING_ENTRY_MAX) { return; }
     // slide entry
     for(char i = RANKING_ENTRY_MAX - 2; i >= rank; --i) {
-      scores[i+1]      = scores[i];
-      names[(i+1)*3  ] = names[i*3  ];
-      names[(i+1)*3+1] = names[i*3+1];
-      names[(i+1)*3+2] = names[i*3+2];
+      scores[i+1] = scores[i];
+      names[(i+1)*RANKING_NAME_LEN  ] = names[i*RANKING_NAME_LEN  ];
+      names[(i+1)*RANKING_NAME_LEN+1] = names[i*RANKING_NAME_LEN+1];
+      names[(i+1)*RANKING_NAME_LEN+2] = names[i*RANKING_NAME_LEN+2];
     }
     // enter
-    scores[rank]    = score;
-    names[rank*3  ] = name[0];
-    names[rank*3+1] = name[1];
-    names[rank*3+2] = name[2];
+    scores[rank] = score;
+    names[rank*RANKING_NAME_LEN  ] = name[0];
+    names[rank*RANKING_NAME_LEN+1] = name[1];
+    names[rank*RANKING_NAME_LEN+2] = name[2];
+    
 #ifdef USE_RANKING_EEPROM
-    // ToDo: write eeprom
+    int baseAddress = EEPROM_FILE_INDEX * 5 * 10;
+    for(byte i = 0; i < RANKING_ENTRY_MAX; ++i) {
+      const int entryAddress = baseAddress + i * EEPROM_ENTRY_BYTES;
+      EEPROM.write(entryAddress    , (scores[i] >> 8) & 0xff);
+      EEPROM.write(entryAddress + 1, scores[i] & 0xff);
+      EEPROM.write(entryAddress + 2, (byte)names[i*RANKING_NAME_LEN  ]);
+      EEPROM.write(entryAddress + 3, (byte)names[i*RANKING_NAME_LEN+1]);
+      EEPROM.write(entryAddress + 4, (byte)names[i*RANKING_NAME_LEN+2]);
+    }
 #endif
   }
 
