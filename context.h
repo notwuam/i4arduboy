@@ -12,8 +12,8 @@ struct Torpedo;
 
 struct Context {
   GameCore& core;
-  Echo echo;
-  Platoons platoons;
+  Echo      echo;
+  Platoons  platoons;
   
   Context(GameCore& core) : core(core) {
   }

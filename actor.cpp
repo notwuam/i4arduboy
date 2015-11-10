@@ -10,7 +10,6 @@
 void Submarine::initialize() {
   x = W << 8;
   y = (SCREEN_HEIGHT / 2) << 8;
-  prevFire   = true;  // to prevent from launching a torpedo
   extraLives = START_LIVES;
   armer      = ARMER_FRAMES;
 }
@@ -56,14 +55,8 @@ void Submarine::move(Context& context) {
   y = Clamp(y, MARGIN - (H << 8), (SCREEN_HEIGHT << 8) - MARGIN);
 
   // launching torpedo
-  if(extraLives >= 0 && (context.core.pressed(BTN_A) || context.core.pressed(BTN_B))) {
-    if(!prevFire) {
-      context.launchTorpedo(fieldX() + 10, fieldY() + 1);
-    }
-    prevFire = true;
-  }
-  else {
-    prevFire = false;
+  if(extraLives >= 0 && (context.core.pushed(BTN_A) || context.core.pushed(BTN_B))) {
+    context.launchTorpedo(fieldX() + 10, fieldY() + 1);
   }
 
   //firing auto shot
@@ -171,14 +164,14 @@ void AutoShot::draw(Context& context) {
 void BigEnemy::initialize(const char y) {
   this->x = FIELD_WIDTH;
   this->y = y;
-  grazed  = false;
+  state   = 0;
   timer   = 0;
 }
 
 void BigEnemy::move(Context& context) {
   // moving
   static const float NORMAL_SPD = -0.2f;
-  if(grazed && x > SCREEN_WIDTH - 5) {
+  if(grazed() && x > SCREEN_WIDTH - 5) {
     x += -3; // submarine found
   }
   else if(timer % 5 == 0) { // -0.2
@@ -194,9 +187,15 @@ void BigEnemy::move(Context& context) {
   context.echo.add(x, y, y+H);
 
   // firing bullet
-  if(timer == 0 && x < SCREEN_WIDTH - W / 2) {
-    const char by = y + bitmapCruEnemy0[1] / 2;
-    context.fireBullet(x, by, context.getFutureSubmarineAngle(x, by, BULLET_TYPE0_SPD), 0);
+  if(x < SCREEN_WIDTH - W / 2) {
+    if(!onScreen()) {
+      timer = 0;  // in order to sync fire cycle
+      state |= ON_SCREEN_MASK;
+    }
+    if(timer == 0) {
+      const char by = y + bitmapCruEnemy0[1] / 2;
+      context.fireBullet(x, by, context.getFutureSubmarineAngle(x, by, BULLET_TYPE0_SPD), 0);
+    }
   }
 
   // updating timer
@@ -220,7 +219,7 @@ void BigEnemy::onHit(Context& context) {
   if(x < SCREEN_WIDTH + 20) {
     context.removeAllBullets();
     context.core.setQuake();
-    context.core.playScore(bing);
+    context.core.playScore(bing); // ToDo: another sfx
     context.spawnParticle(x + random(-2,  8), y + random(-4, 4), 0);
     context.spawnParticle(x + random( 8, 18), y + random(-4, 4), 0);
   }

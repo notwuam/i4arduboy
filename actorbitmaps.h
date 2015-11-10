@@ -93,13 +93,13 @@ PROGMEM const unsigned char bitmapMbullet1[] = {
 // Sbullet0.png / 4x4
 PROGMEM const unsigned char bitmapSbullet0[] = {
   4, 4,
-  0x06, 0x0B, 0x09, 0x06
+  0x06, 0x09, 0x09, 0x06
 };
 
 // Sbullet1.png / 4x4
 PROGMEM const unsigned char bitmapSbullet1[] = {
   4, 4,
-  0x06, 0x09, 0x0D, 0x06
+  0x00, 0x06, 0x06, 0x00
 };
 
 // Explosion0.png / 12x12

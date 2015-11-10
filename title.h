@@ -18,29 +18,24 @@ struct Title {
   byte loop(GameCore& core) {
     // controls
     // up
-    if(core.pressed(BTN_U) && !prevUpButton) {
+    if(core.pushed(BTN_U)) {
       --cursor;
       if(cursor < TITLE_START_GAME) { cursor = TITLE_DISP_RANKING; }
     }
-    prevUpButton = core.pressed(BTN_U);
     // down
-    if(core.pressed(BTN_D) && !prevDownButton) {
+    if(core.pushed(BTN_D)) {
       ++cursor;
       if(cursor > TITLE_DISP_RANKING) { cursor = TITLE_START_GAME; }
     }
-    prevDownButton = core.pressed(BTN_D);
     // enter
-    bool enterButton = core.pressed(BTN_A) || core.pressed(BTN_B);
-    if(enterButton && !prevEnterButton) {
+    if(core.pushed(BTN_A) || core.pushed(BTN_B)) {
       if(cursor == TITLE_TOGGLE_SOUND) {
         core.soundOn = !core.soundOn;
       }
       else {
-        prevEnterButton = true;
         return TITLE_START_GAME;
       }
     }
-    prevEnterButton = enterButton;
   
     // === drawing ===
     // logo and background
@@ -70,8 +65,5 @@ struct Title {
 
   private:
   byte cursor = TITLE_START_GAME;
-  bool prevEnterButton = true;
-  bool prevUpButton    = true;
-  bool prevDownButton  = true;
 };
 

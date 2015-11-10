@@ -5,22 +5,27 @@
 #include "gamecore.h"
 #include "context.h"
 #include "title.h"
+#include "nameregist.h"
 
 enum {
   SCENE_TITLE = 0,
   SCENE_GAME,
+  SCENE_NAMEREGIST,
 };
 
-GameCore core;
-Title title;
-Context context(core);
+GameCore   core;
+Title      title;
+Context    context(core);
+NameRegist nameRegist;
 
-byte scene = 0;
+byte scene = SCENE_NAMEREGIST;
 
 void setup() {
   //Serial.begin(9600);
   core.setup();
   context.initialize();
+  
+  nameRegist.initialize(1, 3000); // test
 }
 
 void loop() {
@@ -28,9 +33,10 @@ void loop() {
     return;
   }
   core.clearDisplay();
+  core.updateInput();
 
   switch(scene) {
-    case SCENE_TITLE:
+    case SCENE_TITLE: {
       switch(title.loop(core)) {
         case TITLE_START_GAME:
           context.initialize();
@@ -39,13 +45,20 @@ void loop() {
 
         default: break;
       }
-      break;
+    } break;
     
-    default:
+    case SCENE_GAME: {
       if(context.loop()) {
+        scene = SCENE_NAMEREGIST;
+        nameRegist.initialize(1, 3000); // test data
+      }
+    } break;
+
+    default: {
+      if(nameRegist.loop(core)) {
         scene = SCENE_TITLE;
       }
-      break;
+    } break;
   }
   
   /*

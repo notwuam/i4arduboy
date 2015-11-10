@@ -2,7 +2,6 @@
 
 #include "constants.h"
 
-#define FIXED_EXIST_THRESHOLD (-(64 << 8))
 typedef unsigned char byte;
 typedef int fixed;
 struct Context;
@@ -12,7 +11,6 @@ struct Submarine {
   static const byte H = 4;
   
   fixed x, y;
-  bool  prevFire;
   char  extraLives;
   byte  armer;
 
@@ -64,7 +62,7 @@ struct BigEnemy {
 
   int  x;
   char y;
-  bool grazed;
+  byte state;
   byte timer;
 
   inline void inactivate() { x = EXIST_THRESHOLD; }
@@ -73,7 +71,13 @@ struct BigEnemy {
   void move(Context& context);
   void draw(Context& context);
   void onHit(Context& context);
-  void onGraze() { grazed = true; }
+  void onGraze() { state |= GRAZED_MASK; }
+
+  private:
+  static const byte GRAZED_MASK    = 1 << 1;
+  static const byte ON_SCREEN_MASK = 1;
+  inline bool grazed() const { return (state & GRAZED_MASK) != 0; }
+  inline bool onScreen() const { return (state & ON_SCREEN_MASK) != 0; }
 };
 
 struct SmallEnemy {
