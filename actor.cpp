@@ -87,11 +87,12 @@ void Submarine::onHit(Context& context) {
   if(armer <= 0) {
     if(extraLives >= 0) {
       context.spawnParticle(fieldX() - 2, fieldY() - 4, PARTICLE_EXPLOSION);
-      context.core.tone(523, 250);
+      context.core.tone(523, 250);  // ToDo: improve sfx
     }
     --extraLives;
     if(extraLives < 0) {
       context.setGameover();
+      // ToDo: add gameover sfx
       inactivate();
     }
     armer = ARMER_FRAMES;
@@ -106,6 +107,7 @@ void Torpedo::launch(const char x, const char y) {
     this->x = x;
     this->y = y;
     vx = 0;
+    // ToDo: add sfx if I can
   }
 }
 
@@ -214,15 +216,15 @@ void BigEnemy::onHit(Context& context) {
     context.addScore((x - SCREEN_WIDTH) * 10 / (FIELD_WIDTH - SCREEN_WIDTH));
   }
   // near
-#ifndef LOW_FLASH_MEMORY
   if(x < SCREEN_WIDTH + 20) {
-    context.removeAllBullets();
-    context.core.setQuake();
     context.core.playScore(bing); // ToDo: another sfx
     context.spawnParticle(x + random(-2,  8), y + random(-4, 4), PARTICLE_EXPLOSION);
     context.spawnParticle(x + random( 8, 18), y + random(-4, 4), PARTICLE_EXPLOSION);
-  }
+#ifndef LOW_FLASH_MEMORY
+    context.removeAllBullets();
+    context.core.setQuake();
 #endif
+  }
   // reset
   inactivate();
 }
@@ -312,10 +314,17 @@ void SmallEnemy::draw(Context& context) {
 }
 
 void SmallEnemy::onHit(Context& context) {
-  context.spawnParticle(round(x) - 5, round(y) - 4, PARTICLE_EXPLOSION);
   context.addScore(1);
+  if(x < SCREEN_WIDTH + 20) { // near
+    context.spawnParticle(round(x) - 5, round(y) - 4, PARTICLE_EXPLOSION);
+    // ToDo: add sfx
+    //context.core.playScore(bing);
+  }
+  // platoon elimination
   if(context.platoons.checkBonus(getPlatoon(), true)) {
-    context.spawnParticle(round(x) - 2, round(y) - 2, PARTICLE_TEN_POINT);
+    if(x < SCREEN_WIDTH + 20) { // near
+      context.spawnParticle(round(x) - 2, round(y) - 2, PARTICLE_TEN_POINT);
+    }
     context.addScore(10);
   }
   inactivate();
