@@ -1,9 +1,9 @@
 #include "modules.h"
-#include "context.h"
+#include "gamelevel.h"
 
 // === Echo ===
 
-void Echo::reset(Context& context, const byte subX) {
+void Echo::reset(GameLevel& context, const byte subX) {
   if(context.frameCount() % ECHO_CYCLE == 0) {
     for(byte i = 0; i < ECHO_VERT_RESO; ++i) {
       intensities[i] = 0;
@@ -33,7 +33,7 @@ void Echo::add(const int left, const char top, const char bottom) {
   }
 }
 
-void Echo::draw(Context& context) {
+void Echo::draw(GameLevel& context) {
   if(
     context.frameCount() / 3 % 2 == 0 ||  // tearing
     context.frameCount() % ECHO_CYCLE < ECHO_CYCLE / 2  // sustain: 30 frames
@@ -68,7 +68,7 @@ void Platoons::set(const char y, const byte type) {
   }
 }
 
-void Platoons::spawn(Context& context) {
+void Platoons::spawn(GameLevel& context) {
   static const byte INTERVAL = 16;
   for(byte i = 0; i < PLATOON_MAX; ++i) {
     if(!inUse(i)) { continue; }

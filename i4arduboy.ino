@@ -3,7 +3,7 @@
 #include "Arduboy.h"
 
 #include "gamecore.h"
-#include "context.h"
+#include "gamelevel.h"
 #include "title.h"
 #include "nameentry.h"
 #include "ranking.h"
@@ -16,8 +16,8 @@ enum {
 };
 
 GameCore core;
-Title    title;
-Context  context(core);
+Title     title;
+GameLevel gameLevel(core);
 NameEntry nameEntry;
 Ranking   ranking;
 
@@ -43,7 +43,7 @@ void loop() {
     case SCENE_TITLE: {
       switch(title.loop(core)) {
         case TITLE_START_GAME: {
-          context.onEntry();
+          gameLevel.onEntry();
           scene = SCENE_GAME;
         } break;
           
@@ -57,11 +57,11 @@ void loop() {
     } break;
     
     case SCENE_GAME: {
-      if(context.loop()) {
+      if(gameLevel.loop()) {
         // check high score
-        const byte rank = ranking.getRank(context.getScore());
-        if(rank < RANKING_ENTRY_MAX && context.getScore() > 0) {
-          nameEntry.onEntry(rank, context.getScore());
+        const byte rank = ranking.getRank(gameLevel.getScore());
+        if(rank < RANKING_ENTRY_MAX && gameLevel.getScore() > 0) {
+          nameEntry.onEntry(rank, gameLevel.getScore());
           scene = SCENE_NAME_ENTRY;
         }
         else {

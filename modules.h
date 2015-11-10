@@ -3,7 +3,7 @@
 #include "gamecore.h"
 #include "constants.h"
 
-struct Context;
+struct GameLevel;
 
 #define ECHO_GRID_SIZE (3)
 #define ECHO_VERT_RESO (SCREEN_HEIGHT / ECHO_GRID_SIZE)
@@ -11,9 +11,9 @@ struct Context;
 #define ECHO_CYCLE     (60)
 
 struct Echo {
-  void reset(Context& context, const byte subX);
+  void reset(GameLevel& context, const byte subX);
   void add(const int left, const char top, const char bottom);
-  void draw(Context& context);
+  void draw(GameLevel& context);
 
   private:
   byte intensities[ECHO_VERT_RESO];
@@ -30,7 +30,7 @@ struct Echo {
 struct Platoons {
   void initialize();
   void set(const char y, const byte type);
-  void spawn(Context& context);
+  void spawn(GameLevel& context);
   bool checkBonus(const byte idx, bool killed);
   
   private:

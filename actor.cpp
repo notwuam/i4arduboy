@@ -1,5 +1,5 @@
 #include "actor.h"
-#include "context.h"
+#include "gamelevel.h"
 #include "modules.h"
 #include "util.h"
 #include "assets.h"
@@ -13,7 +13,7 @@ void Submarine::initialize() {
   armer      = ARMER_FRAMES;
 }
 
-void Submarine::move(Context& context) {
+void Submarine::move(GameLevel& context) {
   if(context.isGameover()) { return; }
   
   // control
@@ -73,7 +73,7 @@ void Submarine::move(Context& context) {
   if(armer > 0) { --armer; }
 }
 
-void Submarine::draw(Context& context) {
+void Submarine::draw(GameLevel& context) {
   if(armer == 0 || (extraLives >= 0 && context.frameCount() / 3 % 2 == 0)) {
     context.core.drawBitmap(fieldX() - 1, fieldY() - 2, bitmapSubmarine, 2);
     if(context.frameCount() % ECHO_CYCLE > 30) {  // sustain: 30 frames
@@ -83,7 +83,7 @@ void Submarine::draw(Context& context) {
   //context.getArduboy().drawRect(x, y, W, H, 0);
 }
 
-void Submarine::onHit(Context& context) {
+void Submarine::onHit(GameLevel& context) {
   if(armer <= 0) {
     if(extraLives >= 0) {
       context.spawnParticle(fieldX() - 2, fieldY() - 4, PARTICLE_EXPLOSION);
@@ -111,7 +111,7 @@ void Torpedo::launch(const char x, const char y) {
   }
 }
 
-void Torpedo::move(Context& context) {
+void Torpedo::move(GameLevel& context) {
   static const fixed ACC = 1 << 7;  // 0.5
   if(!exist()) { return; }
   vx += ACC - (vx >> 4);
@@ -121,7 +121,7 @@ void Torpedo::move(Context& context) {
   }
 }
 
-void Torpedo::draw(Context& context) {
+void Torpedo::draw(GameLevel& context) {
   if(!exist()) { return; }
   // body
   context.core.drawBitmap(x, y - 1, bitmapTorpedo, 2);
@@ -144,7 +144,7 @@ void AutoShot::initialize(const char x, const char y) {
   this->y = y;
 }
 
-void AutoShot::move(Context& context) {
+void AutoShot::move(GameLevel& context) {
   // moving
   x += 8;
 
@@ -154,7 +154,7 @@ void AutoShot::move(Context& context) {
   }
 }
 
-void AutoShot::draw(Context& context) {
+void AutoShot::draw(GameLevel& context) {
   context.core.drawBitmap((int)x + 2, (int)y + 3, bitmapAutoShot, 2);
   //context.core.getArduboy().drawRect(x, y, W, H, 1);
 }
@@ -169,7 +169,7 @@ void BigEnemy::initialize(const char y) {
   timer   = 0;
 }
 
-void BigEnemy::move(Context& context) {
+void BigEnemy::move(GameLevel& context) {
   // moving
   static const float NORMAL_SPD = -0.2f;
   if(grazed() && x > SCREEN_WIDTH - 5) {
@@ -204,12 +204,12 @@ void BigEnemy::move(Context& context) {
   timer = (timer + 1) % PERIOD;
 }
 
-void BigEnemy::draw(Context& context) {
+void BigEnemy::draw(GameLevel& context) {
   if(x - 3 > SCREEN_WIDTH) { return; }
   context.core.drawBitmap(x - 3, y - 2, bitmapCruEnemy0, 2);
 }
 
-void BigEnemy::onHit(Context& context) {
+void BigEnemy::onHit(GameLevel& context) {
   // add score
   context.addScore(10);
   if(x > SCREEN_WIDTH) {  // far bonus
@@ -239,7 +239,7 @@ void SmallEnemy::initialize(const char y, const byte type) {
   timer      = 0;
 }
 
-void SmallEnemy::move(Context& context) {
+void SmallEnemy::move(GameLevel& context) {
   const byte period = (getType() == 0) ? ZIG_PERIOD : TRI_PERIOD;
 
   switch(getType()) {
@@ -290,7 +290,7 @@ void SmallEnemy::move(Context& context) {
   timer = (timer + 1) % period;
 }
 
-void SmallEnemy::draw(Context& context) {
+void SmallEnemy::draw(GameLevel& context) {
   if(x - 4 > SCREEN_WIDTH) { return; }
   switch(getType()) {
     // zigzag
@@ -313,7 +313,7 @@ void SmallEnemy::draw(Context& context) {
   //context.core.getArduboy().drawRect(x, y, W, H, 0);
 }
 
-void SmallEnemy::onHit(Context& context) {
+void SmallEnemy::onHit(GameLevel& context) {
   context.addScore(1);
   if(x < SCREEN_WIDTH + 20) { // near
     context.spawnParticle(round(x) - 5, round(y) - 4, PARTICLE_EXPLOSION);
@@ -343,7 +343,7 @@ void Bullet::initialize(const char x, const char y, const float radian, const by
   vy = round(sin(radian) * speed / (1.f / 256));
 }
 
-void Bullet::move(Context& context) {
+void Bullet::move(GameLevel& context) {
   x += vx;
   y += vy;
 
@@ -357,7 +357,7 @@ void Bullet::move(Context& context) {
   }
 }
 
-void Bullet::draw(Context& context) {
+void Bullet::draw(GameLevel& context) {
   // ToDo: async animation (if there are enough memories)
   const byte frame = context.frameCount() / 3 % 2;
   
@@ -372,7 +372,7 @@ void Bullet::draw(Context& context) {
   //arduboy.drawPixel(x, y, 0);
 }
 
-void Bullet::onHit(Context& context) {
+void Bullet::onHit(GameLevel& context) {
   context.core.drawCircle(fieldX(), fieldY(), 6, 1);
   inactivate();
 }
@@ -380,14 +380,14 @@ void Bullet::onHit(Context& context) {
 
 // === Particle ===
 
-void Particle::move(Context& context) {
+void Particle::move(GameLevel& context) {
   --limit;
   if(limit <= 0) {
     inactivate();
   }
 }
 
-void Particle::draw(Context& context) {
+void Particle::draw(GameLevel& context) {
   switch(type) {
     case 0: {
       if(limit > 8) {

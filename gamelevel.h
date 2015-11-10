@@ -10,12 +10,12 @@
 struct Submarine;
 struct Torpedo;
 
-struct Context {
+struct GameLevel {
   GameCore& core;
   Echo      echo;
   Platoons  platoons;
   
-  Context(GameCore& core) : core(core) {
+  GameLevel(GameCore& core) : core(core) {
   }
   
   inline unsigned long frameCount() const { return frames; }

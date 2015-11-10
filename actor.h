@@ -24,7 +24,7 @@ enum {
 
 typedef unsigned char byte;
 typedef int fixed;
-struct Context;
+struct GameLevel;
 
 struct Submarine {
   static const byte W = 10;
@@ -40,9 +40,9 @@ struct Submarine {
   inline char fieldY() const { return y >> 8; }
   
   void initialize();
-  void move(Context& context);
-  void draw(Context& context);
-  void onHit(Context& context);
+  void move(GameLevel& context);
+  void draw(GameLevel& context);
+  void onHit(GameLevel& context);
 };
 
 struct Torpedo {
@@ -57,8 +57,8 @@ struct Torpedo {
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   
   void launch(const char x, const char y);
-  void move(Context& context);
-  void draw(Context& context);
+  void move(GameLevel& context);
+  void draw(GameLevel& context);
   void onHit() { inactivate(); }
 };
 
@@ -71,8 +71,8 @@ struct AutoShot {
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   void initialize(const char x, const char y);
-  void move(Context& context);
-  void draw(Context& context);
+  void move(GameLevel& context);
+  void draw(GameLevel& context);
   void onHit() { inactivate(); }
 };
 
@@ -88,9 +88,9 @@ struct BigEnemy {
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   void initialize(const char y);
-  void move(Context& context);
-  void draw(Context& context);
-  void onHit(Context& context);
+  void move(GameLevel& context);
+  void draw(GameLevel& context);
+  void onHit(GameLevel& context);
   void onGraze() { state |= GRAZED_MASK; }
 
   private:
@@ -112,9 +112,9 @@ struct SmallEnemy {
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   void initialize(const char y, const byte type);
-  void move(Context& context);
-  void draw(Context& context);
-  void onHit(Context& context);
+  void move(GameLevel& context);
+  void draw(GameLevel& context);
+  void onHit(GameLevel& context);
 
   inline byte getType() const { return (type >> 1) & 0x7; }
   inline bool canFire() const { return (type & 1) == 0; }
@@ -137,9 +137,9 @@ struct Bullet {
   inline void inactivate() { x = FIXED_EXIST_THRESHOLD; }
   inline bool exist() const { return x > FIXED_EXIST_THRESHOLD; }
   void initialize(const char x, const char y, const float radian, const byte type);
-  void move(Context& context);
-  void draw(Context& context);
-  void onHit(Context& context);
+  void move(GameLevel& context);
+  void draw(GameLevel& context);
+  void onHit(GameLevel& context);
 };
 
 struct Particle {
@@ -154,7 +154,7 @@ struct Particle {
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   //void initialize(const char x, char float y, const byte type); // in order to reduce memory
-  void move(Context& context);
-  void draw(Context& context);
+  void move(GameLevel& context);
+  void draw(GameLevel& context);
 };
 
