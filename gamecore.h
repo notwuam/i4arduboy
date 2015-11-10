@@ -39,7 +39,7 @@ struct GameCore {
   inline bool pushed(byte button) const {
     return (nowInput & button) != 0 && (prevInput & button) == 0;
   }
-#ifndef LOW_MEMORY
+#ifndef LOW_FLASH_MEMORY
   void updateQuake() {
     if(quakeForce > 0.5f) {
       quakeForce *= 0.85f;

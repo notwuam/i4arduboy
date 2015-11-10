@@ -26,7 +26,7 @@ struct Context {
   }
   inline bool isGameover() const { return gameoverCount >= 0; }
   inline unsigned int getScore() const { return score; }
-#ifndef LOW_MEMORY
+#ifndef LOW_FLASH_MEMORY
   bool lookForEnemy() const {
     for(byte i = 0; i < BIG_ENEMY_MAX; ++i) {
       if(bigEnemies[i].x > 0 && bigEnemies[i].x < SCREEN_WIDTH + 16) {
@@ -113,7 +113,7 @@ struct Context {
         }
       }
     }
-#ifndef LOW_MEMORY
+#ifndef LOW_FLASH_MEMORY
     // SmallEnemy vs Torpedo
     for(byte i = 0; i < SMALL_ENEMY_MAX; ++i) {
       if(!torpedo.exist()) { break; }
@@ -140,7 +140,7 @@ struct Context {
           smallEnemies[smallEnemyIdx].onHit(*this);
         }
       }
-#ifndef LOW_MEMORY
+#ifndef LOW_FLASH_MEMORY
       // vs BigEnemy
       for(byte bigEnemyIdx = 0; bigEnemyIdx < BIG_ENEMY_MAX; ++bigEnemyIdx) {
         if(!bigEnemies[bigEnemyIdx].exist()) { continue; }
@@ -176,7 +176,7 @@ struct Context {
     // disp extralives
     core.drawBitmap(0, 4, bitmapExtraLives, 1);
     char text[6];
-    sprintf(text, "%d", submarine.extraLives < 0 ? 0 : submarine.extraLives);
+    sprintf(text, "%c", '0' + (submarine.extraLives < 0 ? 0 : submarine.extraLives));
     core.setCursor(10, 0);
     core.print(text);
 
@@ -221,7 +221,13 @@ struct Context {
     if(score + plus < score) {
       score = 0xffff; // count stop
     }
-    else {
+    else if(gameoverCount < 0) {
+#ifndef EXHIBITION_MODE
+      if((score + plus) / EXTEND_SCORE > score / EXTEND_SCORE && submarine.extraLives < 127) {
+        ++submarine.extraLives;
+        core.playScore(bing); // ToDo: another sfx
+      }
+#endif
       score += plus;
     }
   }

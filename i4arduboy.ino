@@ -35,7 +35,7 @@ void loop() {
   }
   core.clearDisplay();
   core.updateInput();
-#ifndef LOW_MEMORY
+#ifndef LOW_FLASH_MEMORY
   core.updateQuake();
 #endif
 

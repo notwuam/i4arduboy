@@ -2,8 +2,11 @@
 
 #define DEBUG
 
+// usually commented out
+//#define EXHIBITION_MODE
+
 // define to omit some specifications in order to reduce flash memory
-//#define LOW_MEMORY
+//#define LOW_FLASH_MEMORY
 
 // define if use EEPROM for saving ranking data
 //#define USE_RANKING_EEPROM
@@ -27,6 +30,7 @@
 // submarine settings
 #define START_LIVES      (2)
 #define ARMER_FRAMES     (90)
+#define EXTEND_SCORE     (500)
 
 #define SCENE_ENTRY_WAIT (30)
 

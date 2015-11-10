@@ -59,7 +59,7 @@ void Submarine::move(Context& context) {
   }
 
   //firing auto shot
-#ifdef LOW_MEMORY
+#ifdef LOW_FLASH_MEMORY
   if(context.frameCount() % 5 == 0) {
     context.fireAutoShot(fieldX() + 3, fieldY() - 3);
   }
@@ -214,7 +214,7 @@ void BigEnemy::onHit(Context& context) {
     context.addScore((x - SCREEN_WIDTH) * 10 / (FIELD_WIDTH - SCREEN_WIDTH));
   }
   // near
-#ifndef LOW_MEMORY
+#ifndef LOW_FLASH_MEMORY
   if(x < SCREEN_WIDTH + 20) {
     context.removeAllBullets();
     context.core.setQuake();
