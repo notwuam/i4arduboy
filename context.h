@@ -25,6 +25,7 @@ struct Context {
     }
   }
   inline bool isGameover() const { return gameoverCount >= 0; }
+  inline unsigned int getScore() const { return score; }
 #ifndef LOW_MEMORY
   bool lookForEnemy() const {
     for(byte i = 0; i < BIG_ENEMY_MAX; ++i) {
@@ -166,9 +167,6 @@ struct Context {
     }
 
     // === draw ===
-#ifndef LOW_MEMORY
-    core.updateQuake();
-#endif
     // background
     const int fx = -frameCount() / 16;
     DrawWave(core, fx, frameCount());
@@ -212,9 +210,6 @@ struct Context {
     if(gameoverCount >= 0) { ++gameoverCount; }
 
     // exit game if return true
-    if(core.pressed(BTN_A) && core.pressed(BTN_B) && core.pressed(BTN_L)) {
-      return true;  // A+B+Left to terminate
-    }
     if(gameoverCount > 100 && (core.pressed(BTN_A) || core.pressed(BTN_B))) {
       return true;  // skip gameover text;
     }

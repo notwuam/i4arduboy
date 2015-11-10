@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Arduboy.h"
-
-#define DEBUG
+#include "constants.h"
 
 #define SCREEN_WIDTH  (WIDTH)
 #define SCREEN_HEIGHT (HEIGHT)

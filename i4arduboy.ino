@@ -5,27 +5,31 @@
 #include "gamecore.h"
 #include "context.h"
 #include "title.h"
-#include "nameregist.h"
+#include "nameentry.h"
+#include "ranking.h"
 
 enum {
   SCENE_TITLE = 0,
   SCENE_GAME,
-  SCENE_NAMEREGIST,
+  SCENE_NAME_ENTRY,
+  SCENE_RANKING,
 };
 
-GameCore   core;
-Title      title;
-Context    context(core);
-NameRegist nameRegist;
+GameCore core;
+Title    title;
+Context  context(core);
+NameEntry nameEntry;
+Ranking   ranking;
 
-byte scene = SCENE_NAMEREGIST;
+byte scene = SCENE_TITLE;
 
 void setup() {
   //Serial.begin(9600);
   core.setup();
   context.initialize();
+  ranking.initialize();
   
-  nameRegist.initialize(1, 3000); // test
+  nameEntry.initialize(1, 3000); // test
 }
 
 void loop() {
@@ -34,28 +38,53 @@ void loop() {
   }
   core.clearDisplay();
   core.updateInput();
+#ifndef LOW_MEMORY
+  core.updateQuake();
+#endif
 
   switch(scene) {
     case SCENE_TITLE: {
       switch(title.loop(core)) {
-        case TITLE_START_GAME:
+        case TITLE_START_GAME: {
           context.initialize();
           scene = SCENE_GAME;
-          break;
-
+        } break;
+          
+        case TITLE_DISP_RANKING: {
+          scene = SCENE_RANKING;
+        } break;
+        
         default: break;
       }
     } break;
     
     case SCENE_GAME: {
       if(context.loop()) {
-        scene = SCENE_NAMEREGIST;
-        nameRegist.initialize(1, 3000); // test data
+        // check high score
+        const byte rank = ranking.getRank(context.getScore());
+        if(rank < RANKING_ENTRY_MAX) {
+          nameEntry.initialize(rank, context.getScore());
+          scene = SCENE_NAME_ENTRY;
+        }
+        else {
+          scene = SCENE_TITLE;  // didnt rank in
+        }
+      }
+      // A+B+Left to terminate
+      if(core.pressed(BTN_A) && core.pressed(BTN_B) && core.pressed(BTN_L)) {
+        scene = SCENE_TITLE;
+      }
+    } break;
+
+    case SCENE_NAME_ENTRY: {
+      if(nameEntry.loop(core)) {
+        ranking.enterScore(nameEntry.getScore(), nameEntry.getName());
+        scene = SCENE_TITLE;
       }
     } break;
 
     default: {
-      if(nameRegist.loop(core)) {
+      if(ranking.loop(core)) {
         scene = SCENE_TITLE;
       }
     } break;

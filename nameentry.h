@@ -3,7 +3,7 @@
 #include "gamecore.h"
 #include "scores.h"
 
-struct NameRegist {
+struct NameEntry {
   void initialize(byte rank, unsigned int score) {
     name[0] = name[1] = name[2] = ' ';
     nameCursor  = 0;
@@ -14,20 +14,25 @@ struct NameRegist {
   }
 
   bool loop(GameCore& core) {
-    static const byte COLUMN    = 10;
+    static const byte COLUMN = 10;
+    static const byte ROW    = 4;
     if(exitCount < 0) {
       // move cursor
-      if(core.pushed(BTN_U) && kbCursor / COLUMN > 0) {
-        kbCursor -= COLUMN;
+      if(core.pushed(BTN_U)) {
+        if(kbCursor / COLUMN == 0) { kbCursor += COLUMN * (ROW - 1); }
+        else { kbCursor -= COLUMN; }
       }
-      if(core.pushed(BTN_D) && kbCursor / COLUMN < 3) {
-        kbCursor += COLUMN;
+      if(core.pushed(BTN_D)) {
+        if(kbCursor / COLUMN == ROW - 1) { kbCursor -= COLUMN * (ROW - 1); }
+        else { kbCursor += COLUMN; }
       }
-      if(core.pushed(BTN_L) && kbCursor % COLUMN > 0) {
-        kbCursor -= 1;
+      if(core.pushed(BTN_L)) {
+        if(kbCursor % COLUMN == 0) { kbCursor += COLUMN - 1; }
+        else { kbCursor -= 1; }
       }
-      if(core.pushed(BTN_R) && kbCursor % COLUMN < COLUMN-1) {
-        kbCursor += 1;
+      if(core.pushed(BTN_R)) {
+        if(kbCursor % COLUMN == COLUMN - 1) { kbCursor -= COLUMN - 1; }
+        else { kbCursor += 1; }
       }
       // entry character
       if(core.pushed(BTN_A)) {
@@ -114,6 +119,9 @@ struct NameRegist {
     if(exitCount >= 150) { return true; }
     return false;
   }
+
+  inline unsigned int getScore() const { return score; }
+  inline const char* getName() const { return name; }
   
   private:
   void entryChar(GameCore& core, const char c) {

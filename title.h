@@ -33,7 +33,7 @@ struct Title {
         core.soundOn = !core.soundOn;
       }
       else {
-        return TITLE_START_GAME;
+        return cursor;
       }
     }
   
