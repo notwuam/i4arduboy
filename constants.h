@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG
+//#define DEBUG
 
 // usually commented out
 //#define EXHIBITION_MODE

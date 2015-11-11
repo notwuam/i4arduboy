@@ -97,10 +97,17 @@ struct Generator {
   byte dispTimer;
 };
 
-PROGMEM const byte waveEmpty[] = { INST_DELAY(127), INST_DELAY(127), INST_END_WAVE };
+PROGMEM const byte waveEmpty[] = { INST_DELAY(127), INST_DELAY(127), INST_DELAY(127), INST_END_WAVE };
 PROGMEM const byte waveBeginner0[] = {
   INST_SPAWN(SPAWN_BIG, INST_RAND_NARROW, 38), 
   INST_DELAY(127), INST_DELAY(127), INST_DELAY(127), 
+  INST_END_WAVE
+};
+PROGMEM const byte waveTriTri[] = {
+  INST_SPAWN(SPAWN_ZIG_FILE, INST_RAND_NONE, 18),  INST_DELAY(60), 
+  INST_SPAWN(SPAWN_ZIG_FILE, INST_RAND_NONE, 52),  INST_DELAY(60), 
+  INST_SPAWN(SPAWN_ZIG_FILE, INST_RAND_NONE, 32),
+  INST_DELAY(127), INST_DELAY(127), 
   INST_END_WAVE
 };
 PROGMEM const byte waveBigWall[] = {
@@ -119,6 +126,7 @@ PROGMEM const byte waveCamouflage0[] = {
   INST_DELAY(30),
   INST_SPAWN(SPAWN_BIG      , INST_RAND_NARROW, 44), 
   INST_DELAY(97), 
+  INST_END_WAVE
 };
 PROGMEM const byte waveCamouflage1[] = {
   INST_SPAWN(SPAWN_TRI_SHOAL, INST_RAND_NONE  , 16), 
@@ -127,6 +135,7 @@ PROGMEM const byte waveCamouflage1[] = {
   INST_DELAY(60),
   INST_SPAWN(SPAWN_TRI_SHOAL, INST_RAND_NONE  , 44), 
   INST_DELAY(127), 
+  INST_END_WAVE
 };
 
 PROGMEM const byte waveTest[] = {

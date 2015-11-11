@@ -57,9 +57,18 @@ struct GameLevel {
     torpedo.inactivate();
     inactivateCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     inactivateCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
-    inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
+    //inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     inactivateCharacters<Bullet>(bullets, BULLET_MAX);
     inactivateCharacters<Particle>(particles, PARTICLE_MAX);
+
+    // first shoal
+    for(byte i = 0; i < SMALL_ENEMY_MAX; ++i) {
+      const byte r = random(256);
+      smallEnemies[i].x = FIELD_WIDTH - r % SCREEN_WIDTH;
+      smallEnemies[i].y = r % (SCREEN_HEIGHT - 20) + 10;
+      smallEnemies[i].type  = SENEMY_ZIG_NOFIRE;
+      smallEnemies[i].timer = r % 96;
+    }
     
     echo.reset(*this, 0);
     platoons.initialize();
@@ -71,7 +80,7 @@ struct GameLevel {
   bool loop() {
     // music
 #ifndef DISABLE_MUSIC
-    if(frames > 180 && !core.playing()) { core.playScore(music); }
+    if(frames > 381 && !core.playing()) { core.playScore(music); }
 #endif
     
     // spawn
@@ -128,7 +137,7 @@ struct GameLevel {
       if(!smallEnemies[i].exist()) { continue; }
       if(Collision(
         smallEnemies[i].x, smallEnemies[i].y, smallEnemies[i].W, smallEnemies[i].H,
-        torpedo.x, torpedo.y - GRAZE_RANGE/2, torpedo.W, torpedo.H + GRAZE_RANGE
+        torpedo.x, torpedo.y, torpedo.W, torpedo.H
       )) {
         smallEnemies[i].onHit(*this);
       }
