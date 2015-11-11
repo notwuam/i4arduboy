@@ -319,7 +319,7 @@ struct GameLevel {
       if(pool[i].exist()) { pool[i].draw(*this); }
     }
   }
-  template<typename T> inline char searchAvailableIndex(const T pool[], const byte n) {
+  template<typename T> inline char searchAvailableIndex(const T pool[], const byte n) const {
     for(byte i = 0; i < n; ++i) {
       if(!pool[i].exist()) { return i; }
     }

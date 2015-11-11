@@ -33,7 +33,7 @@ void Echo::add(const int left, const char top, const char bottom) {
   }
 }
 
-void Echo::draw(GameLevel& context) {
+void Echo::draw(GameLevel& context) const {
   if(
     context.frameCount() / 3 % 2 == 0 ||  // tearing
     context.frameCount() % ECHO_CYCLE < ECHO_CYCLE / 2  // sustain: 30 frames

@@ -73,7 +73,7 @@ void Submarine::move(GameLevel& context) {
   if(armer > 0) { --armer; }
 }
 
-void Submarine::draw(GameLevel& context) {
+void Submarine::draw(GameLevel& context) const {
   if(armer == 0 || (extraLives >= 0 && context.frameCount() / 3 % 2 == 0)) {
     context.core.drawBitmap(fieldX() - 1, fieldY() - 2, bitmapSubmarine, 2);
     if(context.frameCount() % ECHO_CYCLE > 30) {  // sustain: 30 frames
@@ -121,7 +121,7 @@ void Torpedo::move(GameLevel& context) {
   }
 }
 
-void Torpedo::draw(GameLevel& context) {
+void Torpedo::draw(GameLevel& context) const {
   if(!exist()) { return; }
   // body
   context.core.drawBitmap(x, y - 1, bitmapTorpedo, 2);
@@ -154,7 +154,7 @@ void AutoShot::move(GameLevel& context) {
   }
 }
 
-void AutoShot::draw(GameLevel& context) {
+void AutoShot::draw(GameLevel& context) const {
   context.core.drawBitmap((int)x + 2, (int)y + 3, bitmapAutoShot, 2);
   //context.core.getArduboy().drawRect(x, y, W, H, 1);
 }
@@ -204,7 +204,7 @@ void BigEnemy::move(GameLevel& context) {
   timer = (timer + 1) % PERIOD;
 }
 
-void BigEnemy::draw(GameLevel& context) {
+void BigEnemy::draw(GameLevel& context) const {
   if(x - 3 > SCREEN_WIDTH) { return; }
   context.core.drawBitmap(x - 3, y - 2, bitmapCruEnemy0, 2);
 }
@@ -290,7 +290,7 @@ void SmallEnemy::move(GameLevel& context) {
   timer = (timer + 1) % period;
 }
 
-void SmallEnemy::draw(GameLevel& context) {
+void SmallEnemy::draw(GameLevel& context) const {
   if(x - 4 > SCREEN_WIDTH) { return; }
   switch(getType()) {
     // zigzag
@@ -357,7 +357,7 @@ void Bullet::move(GameLevel& context) {
   }
 }
 
-void Bullet::draw(GameLevel& context) {
+void Bullet::draw(GameLevel& context) const {
   // ToDo: async animation (if there are enough memories)
   const byte frame = context.frameCount() / 3 % 2;
   
@@ -387,7 +387,7 @@ void Particle::move(GameLevel& context) {
   }
 }
 
-void Particle::draw(GameLevel& context) {
+void Particle::draw(GameLevel& context) const {
   switch(type) {
     case 0: {
       if(limit > 8) {

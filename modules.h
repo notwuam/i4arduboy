@@ -5,27 +5,23 @@
 
 struct GameLevel;
 
-#define ECHO_GRID_SIZE (3)
-#define ECHO_VERT_RESO (SCREEN_HEIGHT / ECHO_GRID_SIZE)
-#define ECHO_HORI_RESO (16)
-#define ECHO_CYCLE     (60)
+#define ECHO_CYCLE (60)
 
 struct Echo {
   void reset(GameLevel& context, const byte subX);
   void add(const int left, const char top, const char bottom);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
 
   private:
+  static const byte ECHO_GRID_SIZE = 3;
+  static const byte ECHO_VERT_RESO = SCREEN_HEIGHT / ECHO_GRID_SIZE;
+  static const byte ECHO_HORI_RESO = 16;
+
   byte intensities[ECHO_VERT_RESO];
   byte submarineX;
   bool acceptFlag;
 };
 
-
-#define PLATOON_MAX        (5)
-#define PLATOON_CONSISTS   (4)
-#define PLATOON_USING_MASK (0x80)
-#define PLATOON_COUNT_MASK (0x7)
 
 struct Platoons {
   void initialize();
@@ -38,6 +34,11 @@ struct Platoons {
     return (status[idx] & PLATOON_USING_MASK) != 0;
   }
   
+  static const byte PLATOON_MAX        = 5;
+  static const byte PLATOON_CONSISTS   = 4;
+  static const byte PLATOON_USING_MASK = 0x80;
+  static const byte PLATOON_COUNT_MASK = 0x7;
+
   char spawnYs[PLATOON_MAX];
   byte types[PLATOON_MAX];
   byte timers[PLATOON_MAX];

@@ -41,7 +41,7 @@ struct Submarine {
   
   void initialize();
   void move(GameLevel& context);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
   void onHit(GameLevel& context);
 };
 
@@ -58,7 +58,7 @@ struct Torpedo {
   
   void launch(const char x, const char y);
   void move(GameLevel& context);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
   void onHit() { inactivate(); }
 };
 
@@ -72,7 +72,7 @@ struct AutoShot {
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   void initialize(const char x, const char y);
   void move(GameLevel& context);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
   void onHit() { inactivate(); }
 };
 
@@ -89,7 +89,7 @@ struct BigEnemy {
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   void initialize(const char y);
   void move(GameLevel& context);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
   void onHit(GameLevel& context);
   void onGraze() { state |= GRAZED_MASK; }
 
@@ -113,7 +113,7 @@ struct SmallEnemy {
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   void initialize(const char y, const byte type);
   void move(GameLevel& context);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
   void onHit(GameLevel& context);
 
   inline byte getType() const { return (type >> 1) & 0x7; }
@@ -138,7 +138,7 @@ struct Bullet {
   inline bool exist() const { return x > FIXED_EXIST_THRESHOLD; }
   void initialize(const char x, const char y, const float radian, const byte type);
   void move(GameLevel& context);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
   void onHit(GameLevel& context);
 };
 
@@ -155,6 +155,6 @@ struct Particle {
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   //void initialize(const char x, char float y, const byte type); // in order to reduce memory
   void move(GameLevel& context);
-  void draw(GameLevel& context);
+  void draw(GameLevel& context) const;
 };
 
