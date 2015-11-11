@@ -28,12 +28,13 @@ struct Platoons {
   void set(const char y, const byte type);
   void spawn(GameLevel& context);
   bool checkBonus(const byte idx, bool killed);
-  
+
   private:
   inline bool inUse(const byte idx) const {
     return (status[idx] & PLATOON_USING_MASK) != 0;
   }
   
+  private:
   static const byte PLATOON_MAX        = 5;
   static const byte PLATOON_CONSISTS   = 4;
   static const byte PLATOON_USING_MASK = 0x80;
@@ -46,6 +47,20 @@ struct Platoons {
 };
 
 
+#define INST_SPAWN_MASK  (B10000000)
+#define INST_TYPE_MASK   (B01111111)
+#define INST_RAND_MASK   (B11000000)
+#define INST_Y_MASK      (B00111111)
+
+#define INST_RAND_WIDE   (B11000000)
+#define INST_RAND_NARROW (B10000000)
+#define INST_RAND_NONE   (B01000000)
+#define INST_RAND_ERROR  (B00000000)
+
+#define INST_END_WAVE    (B00000000)
+#define INST_SPAWN(type, rand, y) INST_SPAWN_MASK | (type), (rand) | ((y) & INST_Y_MASK)
+#define INST_DELAY(frame)         ((frame) > INST_TYPE_MASK ? INST_TYPE_MASK : (frame))
+
 struct Generator {
   void initialize();
   void spawn(GameLevel& context);
@@ -53,14 +68,22 @@ struct Generator {
   inline byte getDifficulty() const { return difficulty; }
   
   private:
-  static const byte ZONE_DISP_FRAMES = 90;
-  static const byte WAVES_IN_ZONE    = 10;
-  
   byte difficulty;
   byte zone;
-  byte wave;
-  byte progCounter;
+  byte waveCount;
+  byte waveIndex;
+  byte progCount;
   byte delayTimer;
   byte dispTimer;
+};
+
+PROGMEM const byte waveEmpty[] = { INST_DELAY(127), INST_DELAY(127), INST_END_WAVE };
+PROGMEM const byte waveBigWall[] = {
+  INST_SPAWN(0, INST_RAND_NONE, 56), INST_DELAY(40),
+  INST_SPAWN(0, INST_RAND_NONE, 44), INST_DELAY(40),  
+  INST_SPAWN(0, INST_RAND_NONE, 32), INST_DELAY(40), 
+  INST_SPAWN(0, INST_RAND_NONE, 20), INST_DELAY(40), 
+  INST_SPAWN(0, INST_RAND_NONE,  8), INST_DELAY(40), 
+  INST_END_WAVE
 };
 

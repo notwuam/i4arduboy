@@ -69,11 +69,11 @@ struct GameLevel {
   }
   bool loop() {
     // spawn
-    if(frameCount() % 240 == 0) {
+    /*if(frameCount() % 240 == 0) {
       spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
       //spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_ZIG_NOFIRE | (3 << 4));
       platoons.set(random(8, SCREEN_HEIGHT - 8), SENEMY_TRI_FIRE);
-    }
+    }*/
     generator.spawn(*this);
     platoons.spawn(*this);
 

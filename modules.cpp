@@ -24,7 +24,7 @@ void Echo::add(const int left, const char top, const char bottom) {
   
   const byte b = top    / ECHO_GRID_SIZE;
   const byte e = bottom / ECHO_GRID_SIZE;
-  byte newInte = (byte)((FIELD_WIDTH - dist) / ECHO_HORI_RESO);
+  byte newInte = (byte)((FIELD_WIDTH - dist) / ECHO_HORI_RESO) + 3; // +3 for display soon
   
   for(byte i = b; i <= e; ++i) {
     if(newInte > intensities[i]) {
@@ -105,19 +105,58 @@ bool Platoons::checkBonus(const byte idx, bool killed) {
 // === Generator ===
 
 void Generator::initialize() {
-  difficulty  = 0;
-  zone        = 0;
-  wave        = 0;
-  progCounter = 0;
-  delayTimer  = 255;
-  dispTimer   = 0;
+  difficulty = 0;
+  zone       = 0;
+  waveCount  = 0;
+  waveIndex  = 0;
+  progCount  = 0;
+  delayTimer = 0;//255;
+  dispTimer  = 0;
 }
 
 void Generator::spawn(GameLevel& context) {
   if(dispTimer  > 0) { --dispTimer; }
   if(delayTimer > 0) { --delayTimer; return; }
   
-  if(zone == 0) { ++zone; }
+  const byte* waves[] = {waveBigWall, waveEmpty};
+  static const byte WAVE_PATTERN_MAX = 2;
+  byte inst;
+
+  inst = pgm_read_byte(waves[waveIndex] + progCount);
+  while(inst != INST_END_WAVE && delayTimer <= 0) {
+    if((inst & INST_SPAWN_MASK) != 0) {
+      const byte type = inst & INST_TYPE_MASK;
+      // get next operand
+      ++progCount;
+      inst = pgm_read_byte(waves[waveIndex] + progCount);
+      const byte rand = inst & INST_RAND_MASK;
+      const byte y    = inst & INST_Y_MASK;
+      // ToDo: switch with type
+      context.spawnBigEnemy(y);
+    }
+    else {
+      delayTimer = inst;
+    }
+    // get next instruction
+    ++progCount;
+    inst = pgm_read_byte(waves[waveIndex] + progCount);
+  }
+
+  // next wave
+  static const byte WAVES_IN_ZONE    = 10;
+  static const byte ZONE_DISP_FRAMES = 90;
+  if(inst == INST_END_WAVE) {
+    ++waveCount;
+    // next zone
+    if(waveCount >= WAVES_IN_ZONE) {
+      waveCount = 0;
+      dispTimer = ZONE_DISP_FRAMES;
+      ++zone;
+    }
+    progCount = 0;
+    // ToDo: decide next wave
+    waveIndex = 1;
+  }
 }
 
 void Generator::draw(GameLevel& context) const {
@@ -130,5 +169,9 @@ void Generator::draw(GameLevel& context) const {
     context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 7 / 2, 10);
     context.core.print(text);
   }
+    char text[16];
+    sprintf(text, "%d,%d", waveIndex, progCount);
+    context.core.setCursor(0, 56);
+    context.core.print(text);
 }
 
