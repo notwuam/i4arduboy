@@ -58,7 +58,7 @@ struct Torpedo {
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   
-  void launch(const char x, const char y);
+  bool launch(const char x, const char y);
   void move(GameLevel& context);
   void draw(GameLevel& context) const;
   void onHit() { inactivate(); }

@@ -45,7 +45,7 @@ struct NameEntry {
         }
         else if(kbCursor == ENTER_KEY) {
           exitCount = 0;
-          core.playScore(bing); // ToDo: another sfx
+          core.tone(880, 1000);
         }
         else if(nameCursor < 3) {
           entryChar(core, ' ');

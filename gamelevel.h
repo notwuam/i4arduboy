@@ -66,9 +66,14 @@ struct GameLevel {
     generator.initialize();
 
     randomSeed(core.frameCount());
-    core.playScore(bing); // ToDo: another sfx
+    core.tone(880, 1000);
   }
   bool loop() {
+    // music
+#ifndef DISABLE_MUSIC
+    if(frames > 180 && !core.playing()) { core.playScore(music); }
+#endif
+    
     // spawn
     /*if(frameCount() % 240 == 0) {
       //spawnBigEnemy(random(8, SCREEN_HEIGHT-8));
@@ -235,7 +240,7 @@ struct GameLevel {
 #ifndef EXHIBITION_MODE
       if((score + plus) / EXTEND_SCORE > score / EXTEND_SCORE && submarine.extraLives < 127) {
         ++submarine.extraLives;
-        core.playScore(bing); // ToDo: another sfx
+        core.tone(1760, 500);
       }
 #endif
       score += plus;
@@ -262,7 +267,9 @@ struct GameLevel {
 
   // spawn characters
   void launchTorpedo(const char x, const char y) {
-    torpedo.launch(x, y);
+    if(torpedo.launch(x, y)) {
+      core.tone(440, 50);
+    }
   }
   void fireAutoShot(const char x, const char y) {
     const char i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);

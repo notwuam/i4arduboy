@@ -11,6 +11,9 @@
 // define if use EEPROM for saving ranking data
 //#define USE_RANKING_EEPROM
 
+// define if disable BGM (you dont need / reduce flash memory)
+//#define DISABLE_MUSIC
+
 // file index bases on sample sketch "ArduBreakout"
 // > Each block of EEPROM has 10 high scores, and each high score entry
 // > is 5 bytes long:  3 bytes for initials and two bytes for score.

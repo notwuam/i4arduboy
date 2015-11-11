@@ -87,7 +87,7 @@ void Submarine::onHit(GameLevel& context) {
   if(armer <= 0) {
     if(extraLives >= 0) {
       context.spawnParticle(fieldX() - 2, fieldY() - 4, PARTICLE_EXPLOSION);
-      context.core.tone(523, 250);  // ToDo: improve sfx
+      context.core.tone(185, 250);
     }
     --extraLives;
     if(extraLives < 0) {
@@ -102,13 +102,14 @@ void Submarine::onHit(GameLevel& context) {
 
 // === Torpedo ===
 
-void Torpedo::launch(const char x, const char y) {
+bool Torpedo::launch(const char x, const char y) {
   if(!exist()) {
     this->x = x;
     this->y = y;
     vx = 0;
-    // ToDo: add sfx if I can
+    return true;
   }
+  return false;
 }
 
 void Torpedo::move(GameLevel& context) {
@@ -220,7 +221,7 @@ void BigEnemy::onHit(GameLevel& context) {
   }
   // near
   if(x < SCREEN_WIDTH + 20) {
-    context.core.playScore(bing); // ToDo: another sfx
+    context.core.tone(1047, 250);
     context.spawnParticle(x + random(-2,  8), y + random(-4, 4), PARTICLE_EXPLOSION);
     context.spawnParticle(x + random( 8, 18), y + random(-4, 4), PARTICLE_EXPLOSION);
 #ifndef LOW_FLASH_MEMORY
@@ -342,8 +343,7 @@ void SmallEnemy::onHit(GameLevel& context) {
   context.addScore(1);
   if(x < SCREEN_WIDTH + 20) { // near
     context.spawnParticle(round(x) - 5, round(y) - 4, PARTICLE_EXPLOSION);
-    // ToDo: add sfx
-    //context.core.playScore(bing);
+    context.core.tone(880, 62);
   }
   // platoon elimination
   if(context.platoons.checkBonus(getPlatoon(), true)) {

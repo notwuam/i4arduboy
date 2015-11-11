@@ -58,6 +58,7 @@ void loop() {
     
     case SCENE_GAME: {
       if(gameLevel.loop()) {
+        core.stopScore();
         // check high score
         const byte rank = ranking.getRank(gameLevel.getScore());
         if(rank < RANKING_ENTRY_MAX && gameLevel.getScore() > 0) {
@@ -71,6 +72,7 @@ void loop() {
       }
       // A+B+Left to terminate
       if(core.pressed(BTN_A) && core.pressed(BTN_B) && core.pressed(BTN_L)) {
+        core.stopScore();
         title.onEntry();
         scene = SCENE_TITLE;
       }
@@ -91,13 +93,6 @@ void loop() {
       }
     } break;
   }
-  
-  /*
-  char text[16];
-  sprintf(text, "%d,%d,%d", getType(), canFire(), getPlatoon());
-  context.core.setCursor(10, 10);
-  context.core.print(text);
-  */
   
   core.display();
 }

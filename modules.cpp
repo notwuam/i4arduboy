@@ -143,8 +143,10 @@ void Generator::spawn(GameLevel& context) {
   if(dispTimer  > 0) { --dispTimer; }
   if(delayTimer > 0) { --delayTimer; return; }  // if delaying, skip generating step
   
-  const byte* waves[] = {waveTest, waveBigWall, waveEmpty}; // generating programs
-  static const byte WAVE_PATTERN_MAX = 3;
+  const byte* waves[] = { // generating scripts
+    waveTest, waveBeginner0, waveCamouflage0, waveCamouflage1, waveBigWall
+  };
+  static const byte WAVE_PATTERN_MAX = 5;
   byte inst;  // current instruction (or operand)
 
   inst = pgm_read_byte(waves[waveIndex] + progCount); // fetch
@@ -191,7 +193,7 @@ void Generator::spawn(GameLevel& context) {
     progCount = 0;
     
     // ToDo: difficulty limit
-    //waveIndex = random(WAVE_PATTERN_MAX - 1) + 1; // except zero
+    waveIndex = random(WAVE_PATTERN_MAX - 1) + 1; // except zero
     
     // difficulty up
     if(difficulty < DIFFICULTY_CAP + DIFFICULTY_DECR) {
@@ -221,9 +223,11 @@ void Generator::draw(GameLevel& context) const {
     context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 7 / 2, 10);
     context.core.print(text);
   }
-    char text[12];
-    sprintf(text, "%d", getDifficulty());
-    context.core.setCursor(0, 56);
-    context.core.print(text);
+#ifdef DEBUG
+  char text[12];
+  sprintf(text, "%d", waveCount);
+  context.core.setCursor(0, 56);
+  context.core.print(text);
+#endif
 }
 

@@ -71,11 +71,13 @@ struct GameCore {
   }
   inline void setCursor(int x, int y) { arduboy.setCursor(x, y); }
   inline void print(char* text) { arduboy.print(text); }
+  inline bool playing() { return arduboy.tunes.playing(); }
   void playScore(const byte* score) {
     if(soundOn) {
       arduboy.tunes.playScore(score);
     }
   }
+  inline void stopScore() { arduboy.tunes.stopScore(); }
   void tone(const unsigned int f, const unsigned long d) {
     if(soundOn) {
       arduboy.tunes.tone(f, d);
