@@ -101,3 +101,34 @@ bool Platoons::checkBonus(const byte idx, bool killed) {
   return false;
 }
 
+
+// === Generator ===
+
+void Generator::initialize() {
+  difficulty  = 0;
+  zone        = 0;
+  wave        = 0;
+  progCounter = 0;
+  delayTimer  = 255;
+  dispTimer   = 0;
+}
+
+void Generator::spawn(GameLevel& context) {
+  if(dispTimer  > 0) { --dispTimer; }
+  if(delayTimer > 0) { --delayTimer; return; }
+  
+  if(zone == 0) { ++zone; }
+}
+
+void Generator::draw(GameLevel& context) const {
+  if(dispTimer > 0 && context.frameCount() / 5 % 2 == 0) {
+    char text[12];
+    sprintf(text, "Score %05d", context.getScore());
+    context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 11 / 2, 00);
+    context.core.print(text);
+    sprintf(text, "ZONE%3d", zone);
+    context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 7 / 2, 10);
+    context.core.print(text);
+  }
+}
+

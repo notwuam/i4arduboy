@@ -62,6 +62,7 @@ struct GameLevel {
     
     echo.reset(*this, 0);
     platoons.initialize();
+    generator.initialize();
 
     randomSeed(core.frameCount());
     core.playScore(bing); // ToDo: another sfx
@@ -73,6 +74,7 @@ struct GameLevel {
       //spawnSmallEnemy(random(8, SCREEN_HEIGHT-8), SENEMY_ZIG_NOFIRE | (3 << 4));
       platoons.set(random(8, SCREEN_HEIGHT - 8), SENEMY_TRI_FIRE);
     }
+    generator.spawn(*this);
     platoons.spawn(*this);
 
     // in order to forecast the position of submarine
@@ -180,10 +182,17 @@ struct GameLevel {
     core.setCursor(10, 0);
     core.print(text);
 
+#ifdef DEBUG
     // disp score
     sprintf(text, "%05d", score);
     core.setCursor(SCREEN_WIDTH/2 - 15, 0);
     core.print(text);
+#endif
+
+    // zone and score
+    if(!isGameover()) {
+      generator.draw(*this);
+    }
     
     // echo
     if(!isGameover()) {
@@ -318,6 +327,8 @@ struct GameLevel {
   }
   
   private:
+  Generator  generator;
+  
   Submarine  submarine;
   Torpedo    torpedo;
 

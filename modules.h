@@ -44,3 +44,22 @@ struct Platoons {
   byte status[PLATOON_MAX];
 };
 
+
+struct Generator {
+  void initialize();
+  void spawn(GameLevel& context);
+  void draw(GameLevel& context) const;
+  inline byte getDifficulty() const { return difficulty; }
+  
+  private:
+  static const byte ZONE_DISP_FRAMES = 90;
+  static const byte WAVES_IN_ZONE    = 10;
+  
+  byte difficulty;
+  byte zone;
+  byte wave;
+  byte progCounter;
+  byte delayTimer;
+  byte dispTimer;
+};
+
