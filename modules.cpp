@@ -69,12 +69,30 @@ void Platoons::set(const char y, const byte type) {
 }
 
 void Platoons::spawn(GameLevel& context) {
-  static const byte INTERVAL = 16;
+  const byte INTERVALS[] = {10, 16, 16};
   for(byte i = 0; i < PLATOON_MAX; ++i) {
     if(!inUse(i)) { continue; }
-    if(timers[i] % INTERVAL == 0 && timers[i] < PLATOON_CONSISTS * INTERVAL) {
-      if(context.spawnSmallEnemy(spawnYs[i], (i << 4) | types[i])) {
-        status[i] = 0;
+    if(
+      timers[i] % INTERVALS[types[i]] == 0 &&
+      timers[i] < PLATOON_CONSISTS * INTERVALS[types[i]]  // limitation PLATOON_CONSISTS
+    ) {
+      // type
+      const byte isOdd = timers[i] / INTERVALS[types[i]] % 2 == 1; // 0123 -> 1234
+      byte spawnType;
+      if(types[i] == PLATOON_ZIG_FILE) {
+        spawnType = isOdd ? SENEMY_ZIG_FIRE : SENEMY_ZIG_NOFIRE;
+      }
+      else {
+        spawnType = isOdd ? SENEMY_TRI_FIRE : SENEMY_TRI_NOFIRE;
+      }
+      // y
+      char y = spawnYs[i];
+      if(types[i] == PLATOON_TRI_SHOAL) {
+        y += random(20) - 10;
+      }
+      // spawn
+      if(context.spawnSmallEnemy(y, (i << 4) | spawnType)) {
+        status[i] = 0;  // reset platoon
       }
     }
     if(timers[i] < 0xff) {
@@ -107,7 +125,7 @@ bool Platoons::checkBonus(const byte idx, bool killed) {
 void Generator::initialize() {
   difficulty = 0;
   zone       = 0;
-  waveCount  = 0;
+  waveCount  = WAVES_IN_ZONE - 1;
   waveIndex  = 0;
   progCount  = 0;
   delayTimer = 0;//255;
@@ -115,47 +133,81 @@ void Generator::initialize() {
 }
 
 void Generator::spawn(GameLevel& context) {
-  if(dispTimer  > 0) { --dispTimer; }
-  if(delayTimer > 0) { --delayTimer; return; }
-  
-  const byte* waves[] = {waveBigWall, waveEmpty};
-  static const byte WAVE_PATTERN_MAX = 2;
-  byte inst;
+#ifdef DEBUG
+  if(context.core.pressed(BTN_B)) {
+    if(context.core.pushed(BTN_U)) { difficulty += 10; }
+    if(context.core.pushed(BTN_D)) { difficulty -= 10; }
+  }
+#endif
 
-  inst = pgm_read_byte(waves[waveIndex] + progCount);
+  if(dispTimer  > 0) { --dispTimer; }
+  if(delayTimer > 0) { --delayTimer; return; }  // if delaying, skip generating step
+  
+  const byte* waves[] = {waveTest, waveBigWall, waveEmpty}; // generating programs
+  static const byte WAVE_PATTERN_MAX = 3;
+  byte inst;  // current instruction (or operand)
+
+  inst = pgm_read_byte(waves[waveIndex] + progCount); // fetch
   while(inst != INST_END_WAVE && delayTimer <= 0) {
+    // spawn
     if((inst & INST_SPAWN_MASK) != 0) {
       const byte type = inst & INST_TYPE_MASK;
+      
       // get next operand
       ++progCount;
       inst = pgm_read_byte(waves[waveIndex] + progCount);
       const byte rand = inst & INST_RAND_MASK;
-      const byte y    = inst & INST_Y_MASK;
-      // ToDo: switch with type
-      context.spawnBigEnemy(y);
+      if(rand == INST_RAND_ERROR) { break; }  // invalid operand
+      byte y = inst & INST_Y_MASK;
+      if     (rand == INST_RAND_WIDE  ) { y =  random(4, 57);  }
+      else if(rand == INST_RAND_NARROW) { y += random(10) - 5; }
+      
+      switch(type) {
+        case SPAWN_BIG:        context.spawnBigEnemy  (y);                      break;
+        case SPAWN_ZIG_SINGLE: context.spawnSmallEnemy(y-5, SENEMY_ZIG_FIRE  ); break;
+        case SPAWN_ZIG_FILE:   context.platoons.set   (y-5, PLATOON_ZIG_FILE ); break;
+        case SPAWN_TRI_SINGLE: context.spawnSmallEnemy(y  , SENEMY_TRI_FIRE  ); break;
+        case SPAWN_TRI_LINE:   context.platoons.set   (y  , PLATOON_TRI_LINE ); break;
+        case SPAWN_TRI_SHOAL:  context.platoons.set   (y  , PLATOON_TRI_SHOAL); break;
+        default: break;
+      }
     }
+    // delay
     else {
       delayTimer = inst;
     }
+    
     // get next instruction
     ++progCount;
     inst = pgm_read_byte(waves[waveIndex] + progCount);
   }
 
   // next wave
-  static const byte WAVES_IN_ZONE    = 10;
   static const byte ZONE_DISP_FRAMES = 90;
-  if(inst == INST_END_WAVE) {
+  static const byte DIFFICULTY_INCR  = 20;
+  static const byte DIFFICULTY_DECR  = 15;
+  if(inst == INST_END_WAVE && delayTimer <= 0) {
     ++waveCount;
+    progCount = 0;
+    
+    // ToDo: difficulty limit
+    waveIndex = random(WAVE_PATTERN_MAX - 1) + 1; // except zero
+    
+    // difficulty up
+    if(difficulty < DIFFICULTY_CAP + DIFFICULTY_DECR) {
+      difficulty += DIFFICULTY_INCR / WAVES_IN_ZONE;
+    }
+    
     // next zone
     if(waveCount >= WAVES_IN_ZONE) {
       waveCount = 0;
-      dispTimer = ZONE_DISP_FRAMES;
+      dispTimer = ZONE_DISP_FRAMES;  // disp zone and score
       ++zone;
+      // difficulty down
+      if(difficulty < DIFFICULTY_CAP + DIFFICULTY_DECR) {
+        difficulty -= DIFFICULTY_DECR;
+      }
     }
-    progCount = 0;
-    // ToDo: decide next wave
-    waveIndex = 1;
   }
 }
 
@@ -163,14 +215,14 @@ void Generator::draw(GameLevel& context) const {
   if(dispTimer > 0 && context.frameCount() / 5 % 2 == 0) {
     char text[12];
     sprintf(text, "Score %05d", context.getScore());
-    context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 11 / 2, 00);
+    context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 11 / 2, 0);
     context.core.print(text);
     sprintf(text, "ZONE%3d", zone);
     context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 7 / 2, 10);
     context.core.print(text);
   }
-    char text[16];
-    sprintf(text, "%d,%d", waveIndex, progCount);
+    char text[12];
+    sprintf(text, "%d", getDifficulty());
     context.core.setCursor(0, 56);
     context.core.print(text);
 }

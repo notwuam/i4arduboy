@@ -23,6 +23,12 @@ struct Echo {
 };
 
 
+enum {
+  PLATOON_ZIG_FILE = 0,
+  PLATOON_TRI_LINE,
+  PLATOON_TRI_SHOAL,
+};
+
 struct Platoons {
   void initialize();
   void set(const char y, const byte type);
@@ -61,13 +67,27 @@ struct Platoons {
 #define INST_SPAWN(type, rand, y) INST_SPAWN_MASK | (type), (rand) | ((y) & INST_Y_MASK)
 #define INST_DELAY(frame)         ((frame) > INST_TYPE_MASK ? INST_TYPE_MASK : (frame))
 
+enum {
+  SPAWN_NONE = 0,
+  SPAWN_BIG,
+  SPAWN_ZIG_SINGLE,
+  SPAWN_ZIG_FILE,
+  SPAWN_TRI_SINGLE,
+  SPAWN_TRI_LINE,
+  SPAWN_TRI_SHOAL,
+  SPAWN_MAX,
+};
+
 struct Generator {
   void initialize();
   void spawn(GameLevel& context);
   void draw(GameLevel& context) const;
-  inline byte getDifficulty() const { return difficulty; }
+  inline byte getDifficulty() const { return (difficulty > DIFFICULTY_CAP) ? DIFFICULTY_CAP : difficulty; }
   
   private:
+  static const byte WAVES_IN_ZONE  = 10;
+  static const byte DIFFICULTY_CAP = 100;
+  
   byte difficulty;
   byte zone;
   byte waveCount;
@@ -79,11 +99,19 @@ struct Generator {
 
 PROGMEM const byte waveEmpty[] = { INST_DELAY(127), INST_DELAY(127), INST_END_WAVE };
 PROGMEM const byte waveBigWall[] = {
-  INST_SPAWN(0, INST_RAND_NONE, 56), INST_DELAY(40),
-  INST_SPAWN(0, INST_RAND_NONE, 44), INST_DELAY(40),  
-  INST_SPAWN(0, INST_RAND_NONE, 32), INST_DELAY(40), 
-  INST_SPAWN(0, INST_RAND_NONE, 20), INST_DELAY(40), 
-  INST_SPAWN(0, INST_RAND_NONE,  8), INST_DELAY(40), 
+  INST_SPAWN(SPAWN_BIG, INST_RAND_NONE, 56), INST_DELAY(40),
+  INST_SPAWN(SPAWN_BIG, INST_RAND_NONE, 44), INST_DELAY(40),  
+  INST_SPAWN(SPAWN_BIG, INST_RAND_NONE, 32), INST_DELAY(40), 
+  INST_SPAWN(SPAWN_BIG, INST_RAND_NONE, 20), INST_DELAY(40), 
+  INST_SPAWN(SPAWN_BIG, INST_RAND_NONE,  8), INST_DELAY(40), 
+  INST_END_WAVE
+};
+
+PROGMEM const byte waveTest[] = {
+  //INST_SPAWN(SPAWN_BIG, INST_RAND_WIDE, 0),
+  //INST_SPAWN(SPAWN_BIG, INST_RAND_NARROW, 32),
+  INST_SPAWN(SPAWN_ZIG_FILE, INST_RAND_NONE, 32),
+  INST_DELAY(127),
   INST_END_WAVE
 };
 
