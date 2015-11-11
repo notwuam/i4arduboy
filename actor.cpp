@@ -193,9 +193,12 @@ void BigEnemy::move(GameLevel& context) {
       timer = 0;  // in order to sync fire cycle
       state |= ON_SCREEN_MASK;
     }
-    if(timer == 0) {
-      const char by = y + bitmapCruEnemy0[1] / 2;
-      context.fireBullet(x, by, context.getFutureSubmarineAngle(x, by, BULLET_TYPE0_SPD), 0);
+    const byte d = context.difficulty();
+    if(timer == 0 || (d >= 60 && timer == 40)) {  // freq up when 60 and over
+      const char bulletY     = y + bitmapCruEnemy0[1] / 2;
+      const char bulletSpeed = (d >= 80) ? BULLET_TYPE2_SPD : BULLET_TYPE0_SPD;
+      const char bulletType  = (d >= 80) ? 2 : 0;
+      context.fireBullet(x, bulletY, context.getFutureSubmarineAngle(x, bulletY, bulletSpeed), bulletType);
     }
   }
 
@@ -254,9 +257,24 @@ void SmallEnemy::move(GameLevel& context) {
       else {
         --x;
       }
+      
       // firing bullet
-      if(timer == 80 && canFire() && x < SCREEN_WIDTH - W / 2) {
-        context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
+      const byte d = context.difficulty();
+      const byte typeCond = canFire() || 
+        (d >= 70 && d < 80) || d >= 100;  // [70,80) or 100
+      if(
+        timer == 80 && typeCond &&    // time / type
+        x < SCREEN_WIDTH - W / 2 &&   // position
+        d >= 20                       // dont fire less than 20
+      ) {
+        const byte  bulletType = (d >= 80) ? 3 : 1;  // rapid when 80 and over
+        const float subAngle   = context.getSubmarineAngle(x, y);
+        context.fireBullet(x, y, subAngle, bulletType);
+        // 3way
+        if((d >= 50 && d < 70) || d >= 90) {
+          context.fireBullet(x, y, subAngle - radians(10), 1);
+          context.fireBullet(x, y, subAngle + radians(10), 1);
+        }
       }
     } break;
 
@@ -271,7 +289,14 @@ void SmallEnemy::move(GameLevel& context) {
       x -= tmp;
       
       // firing bullet
-      if(timer == 64 && canFire() && x < SCREEN_WIDTH && x > SCREEN_WIDTH / 2) {
+      const bool timeCond = timer == 64 || 
+        (context.difficulty() >= 25 && timer == 32) || 
+        (context.difficulty() >= 75 && timer == 96);
+      if(
+        timeCond && canFire() &&                    // time / type
+        x < SCREEN_WIDTH && x > SCREEN_WIDTH / 2 && // position
+        context.difficulty() >= 20                  // difficulty
+      ) {
         context.fireBullet(x, y, context.getSubmarineAngle(x, y), 1);
       }
     } break;
@@ -337,8 +362,9 @@ void Bullet::initialize(const char x, const char y, const float radian, const by
   this->x    = x << 8;
   this->y    = y << 8;
   this->type = type;
-  
-  const int speed = (type == 0 ? BULLET_TYPE0_SPD : BULLET_TYPE1_SPD);
+
+  const byte SPEEDS[] = {BULLET_TYPE0_SPD, BULLET_TYPE1_SPD, BULLET_TYPE2_SPD, BULLET_TYPE3_SPD};
+  byte speed = SPEEDS[type];
   vx = round(cos(radian) * speed / (1.f / 256));
   vy = round(sin(radian) * speed / (1.f / 256));
 }
@@ -361,7 +387,7 @@ void Bullet::draw(GameLevel& context) const {
   // ToDo: async animation (if there are enough memories)
   const byte frame = context.frameCount() / 3 % 2;
   
-  if(type == 0) {
+  if(type % 2 == 0) {
     const byte* bitmaps[] = {bitmapMbullet0, bitmapMbullet1};
     context.core.drawBitmap(fieldX() - bitmapMbullet0[0]/2, fieldY() - bitmapMbullet0[1]/2, bitmaps[frame], 2);
   }

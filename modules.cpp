@@ -191,7 +191,7 @@ void Generator::spawn(GameLevel& context) {
     progCount = 0;
     
     // ToDo: difficulty limit
-    waveIndex = random(WAVE_PATTERN_MAX - 1) + 1; // except zero
+    //waveIndex = random(WAVE_PATTERN_MAX - 1) + 1; // except zero
     
     // difficulty up
     if(difficulty < DIFFICULTY_CAP + DIFFICULTY_DECR) {
@@ -204,7 +204,7 @@ void Generator::spawn(GameLevel& context) {
       dispTimer = ZONE_DISP_FRAMES;  // disp zone and score
       ++zone;
       // difficulty down
-      if(difficulty < DIFFICULTY_CAP + DIFFICULTY_DECR) {
+      if(difficulty < DIFFICULTY_CAP + DIFFICULTY_DECR && zone > 1) {
         difficulty -= DIFFICULTY_DECR;
       }
     }

@@ -9,6 +9,8 @@
 // speed of bullets
 #define BULLET_TYPE0_SPD (3)
 #define BULLET_TYPE1_SPD (1)
+#define BULLET_TYPE2_SPD (4)
+#define BULLET_TYPE3_SPD (2)
 
 enum {
   SENEMY_ZIG_FIRE = 0,

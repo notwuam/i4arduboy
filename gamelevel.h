@@ -26,6 +26,7 @@ struct GameLevel {
   }
   inline bool isGameover() const { return gameoverCount >= 0; }
   inline unsigned int getScore() const { return score; }
+  inline byte difficulty() const { return generator.getDifficulty(); }
 #ifndef LOW_FLASH_MEMORY
   bool lookForEnemy() const {
     for(byte i = 0; i < BIG_ENEMY_MAX; ++i) {
