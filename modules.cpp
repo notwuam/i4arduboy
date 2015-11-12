@@ -144,9 +144,12 @@ void Generator::spawn(GameLevel& context) {
   if(delayTimer > 0) { --delayTimer; return; }  // if delaying, skip generating step
   
   const byte* waves[] = { // generating scripts
-    waveEmpty, waveBeginner0, waveTriTri, waveCamouflage0, waveCamouflage1, waveBigWall
+    waveEmpty, 
+    waveBeginner0, waveBeginner1, 
+    waveTriTri, waveSandwich, waveCatapult, waveCamouflage0, waveCamouflage1, 
+    waveBigWall, waveJamming
   };
-  static const byte WAVE_PATTERN_MAX = 6;
+  static const byte WAVE_PATTERN_MAX = 10;
   byte inst;  // current instruction (or operand)
 
   inst = pgm_read_byte(waves[waveIndex] + progCount); // fetch
@@ -186,7 +189,7 @@ void Generator::spawn(GameLevel& context) {
 
   // next wave
   static const byte ZONE_DISP_FRAMES = 90;
-  static const byte DIFFICULTY_INCR  = 20;
+  static const byte DIFFICULTY_INCR  = 30;
   static const byte DIFFICULTY_DECR  = 15;
   if(inst == INST_END_WAVE && delayTimer <= 0) {
     ++waveCount;

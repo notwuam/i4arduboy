@@ -69,6 +69,7 @@ struct GameLevel {
       smallEnemies[i].type  = SENEMY_ZIG_NOFIRE;
       smallEnemies[i].timer = r % 96;
     }
+    //inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
     
     echo.reset(*this, 0);
     platoons.initialize();
