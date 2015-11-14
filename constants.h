@@ -32,7 +32,7 @@
 
 // submarine settings
 #define START_LIVES      (2)
-#define ARMER_FRAMES     (90)
+#define ARMOR_FRAMES     (90)
 #define EXTEND_SCORE     (500)
 
 #define SCENE_ENTRY_WAIT (30)

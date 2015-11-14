@@ -34,7 +34,7 @@ struct Submarine {
   
   fixed x, y;
   char  extraLives;
-  byte  armer;
+  byte  armor;
 
   inline void inactivate() { x = FIXED_EXIST_THRESHOLD; }
   inline bool exist() const { return x > FIXED_EXIST_THRESHOLD; }

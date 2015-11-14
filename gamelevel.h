@@ -177,7 +177,7 @@ struct GameLevel {
 
     // Bullet vs Submarine
     for(byte i = 0; i < BULLET_MAX; ++i) {
-      if(!submarine.exist()) { break; } // todo armer
+      if(!submarine.exist()) { break; } // todo armor
       if(!bullets[i].exist()) { continue; }
       if(Collision(
         bullets[i].fieldX(), bullets[i].fieldY(), bullets[i].W, bullets[i].H, 

@@ -10,7 +10,7 @@ void Submarine::initialize() {
   x = W << 8;
   y = (SCREEN_HEIGHT / 2) << 8;
   extraLives = START_LIVES;
-  armer      = ARMER_FRAMES;
+  armor      = ARMOR_FRAMES;
 }
 
 void Submarine::move(GameLevel& context) {
@@ -69,12 +69,12 @@ void Submarine::move(GameLevel& context) {
   }
 #endif
 
-  // updating armer timer
-  if(armer > 0) { --armer; }
+  // updating armor timer
+  if(armor > 0) { --armor; }
 }
 
 void Submarine::draw(GameLevel& context) const {
-  if(armer == 0 || (extraLives >= 0 && context.frameCount() / 3 % 2 == 0)) {
+  if(armor == 0 || (extraLives >= 0 && context.frameCount() / 3 % 2 == 0)) {
     context.core.drawBitmap(fieldX() - 1, fieldY() - 2, bitmapSubmarine, 2);
     if(context.frameCount() % ECHO_CYCLE > 30) {  // sustain: 30 frames
       context.core.drawPixel(fieldX() + 6, fieldY() - 1, 1);
@@ -84,7 +84,7 @@ void Submarine::draw(GameLevel& context) const {
 }
 
 void Submarine::onHit(GameLevel& context) {
-  if(armer <= 0) {
+  if(armor <= 0) {
     if(extraLives >= 0) {
       context.spawnParticle(fieldX() - 2, fieldY() - 4, PARTICLE_EXPLOSION);
       context.core.tone(185, 250);
@@ -95,7 +95,7 @@ void Submarine::onHit(GameLevel& context) {
       // ToDo: add gameover sfx
       inactivate();
     }
-    armer = ARMER_FRAMES;
+    armor = ARMOR_FRAMES;
   }
 }
 
