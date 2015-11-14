@@ -62,6 +62,7 @@ struct GameLevel {
     inactivateCharacters<Particle>(particles, PARTICLE_MAX);
 
     // first shoal
+#ifndef DEBUG
     for(byte i = 0; i < SMALL_ENEMY_MAX; ++i) {
       const byte r = random(256);
       smallEnemies[i].x = FIELD_WIDTH - r % SCREEN_WIDTH;
@@ -69,7 +70,9 @@ struct GameLevel {
       smallEnemies[i].type  = SENEMY_ZIG_NOFIRE;
       smallEnemies[i].timer = r % 96;
     }
-    //inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
+#else
+    inactivateCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
+#endif
     
     echo.reset(*this, 0);
     platoons.initialize();

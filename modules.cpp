@@ -128,7 +128,7 @@ void Generator::initialize() {
   waveCount  = WAVES_IN_ZONE - 1;
   waveIndex  = 0;
   progCount  = 0;
-  delayTimer = 0;//255;
+  delayTimer = 0;
   dispTimer  = 0;
 }
 
@@ -144,12 +144,17 @@ void Generator::spawn(GameLevel& context) {
   if(delayTimer > 0) { --delayTimer; return; }  // if delaying, skip generating step
   
   const byte* waves[] = { // generating scripts
-    waveEmpty, 
-    waveBeginner0, waveBeginner1, 
-    waveTriTri, waveSandwich, waveCatapult, waveCamouflage0, waveCamouflage1, 
-    waveBigWall, waveJamming
+#ifdef DEBUG
+    waveTest,
+#else 
+    waveEmpty, // 0
+#endif
+    waveBeginner0, waveBeginner1, waveRandomLines, waveZigTop, waveZigBottom,  // easy 1-5
+    waveTriTri, waveSandwich, waveCatapult, waveSuperPlatoon,   // normal 6-9
+    waveBigWall, waveJamming, waveCamouflage0, waveCamouflage1, waveArrows  // hard 10-14
   };
-  static const byte WAVE_PATTERN_MAX = 10;
+  static const byte DIFFICULTY_GROUP[] = {5, 4, 5};
+  //static const byte WAVE_PATTERN_MAX = 15;
   byte inst;  // current instruction (or operand)
 
   inst = pgm_read_byte(waves[waveIndex] + progCount); // fetch
@@ -189,14 +194,29 @@ void Generator::spawn(GameLevel& context) {
 
   // next wave
   static const byte ZONE_DISP_FRAMES = 90;
-  static const byte DIFFICULTY_INCR  = 30;
-  static const byte DIFFICULTY_DECR  = 15;
+  static const byte DIFFICULTY_INCR  = 20;
+  static const byte DIFFICULTY_DECR  = 10;
   if(inst == INST_END_WAVE && delayTimer <= 0) {
     ++waveCount;
     progCount = 0;
     
-    // ToDo: difficulty limit
-    waveIndex = random(WAVE_PATTERN_MAX - 1) + 1; // except zero
+    // difficulty limit
+    byte randNum;
+    byte randMin = 1; // except zero
+    if(getDifficulty() < 10) {
+      randNum = DIFFICULTY_GROUP[0];
+    }
+    else if(getDifficulty() < 50) {
+      randNum = DIFFICULTY_GROUP[0] + DIFFICULTY_GROUP[1];
+    }
+    else if(getDifficulty() < 70) {
+      randNum = DIFFICULTY_GROUP[0] + DIFFICULTY_GROUP[1] + DIFFICULTY_GROUP[2];
+    }
+    else{
+      randNum =  DIFFICULTY_GROUP[1] + DIFFICULTY_GROUP[2];
+      randMin += DIFFICULTY_GROUP[0];
+    }
+    waveIndex = random(randNum) + randMin;
     
     // difficulty up
     if(difficulty < DIFFICULTY_CAP + DIFFICULTY_DECR) {
@@ -226,11 +246,5 @@ void Generator::draw(GameLevel& context) const {
     context.core.setCursor(SCREEN_WIDTH / 2 - 6 * 7 / 2, 10);
     context.core.print(text);
   }
-#ifdef DEBUG
-  char text[12];
-  sprintf(text, "%d", getDifficulty());
-  context.core.setCursor(0, 56);
-  context.core.print(text);
-#endif
 }
 
