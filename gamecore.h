@@ -54,6 +54,8 @@ struct GameCore {
   inline void setQuake(float force = 10) { quakeForce = force; }
 #endif
 
+  // === arduboy delegation ===
+  // if you build for another hardware, please implement these functions
   inline bool nextFrame() { return arduboy.nextFrame(); }
   inline void clearDisplay() { arduboy.clearDisplay(); }
   inline void display() { arduboy.display(); }
@@ -83,6 +85,7 @@ struct GameCore {
       arduboy.tunes.tone(f, d);
     }
   }
+  // ===
   
 #ifdef DEBUG
   inline Arduboy& getArduboy() { return arduboy; }
