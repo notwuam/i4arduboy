@@ -45,7 +45,7 @@
 
 ## ビルドオプション
 
-```constants.h```のマクロ定義で一部の項目についてビルド設定が可能です。
+ソースのうち、```constants.h```のマクロ定義で一部の項目についてビルド設定が可能です。
 
 * ```LOW_FLASH_MEMORY``` - プログラム容量(FLASHメモリ)が少なくてビルドができない場合コメントを外してください。一部の機能が省略される代わり、数百Bytesの余裕ができます。
 * ```USE_RANKING_EEPROM``` - 定義すると Arduino の不揮発性メモリ(EEPROM)を用い、ランキングデータが電源を切っても維持されるようになります。プログラムに数百Bytesの追加容量が必要です。
@@ -85,9 +85,7 @@ i4arduboy は、```gamecore.h```の```GameCore```構造体のメンバ関数や�
 * ```void stopScore()``` - 楽譜データ演奏中ならばそれを停止する。
 * ```void tone(unsigned int f, unsigned long d)``` - 周波数 f のビープを d[ms] 発声。
 
-映像出力ライブラリとして、例えば以下のものがあります。
-
-* TVout
+映像出力ライブラリの候補としては ArduinoPlayground/[Output](http://playground.arduino.cc/Main/InterfacingWithHardware#Output) の LCDs や Video Output を参考にすると良いでしょう。
 
 ## 技術情報
 
