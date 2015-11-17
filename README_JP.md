@@ -4,7 +4,7 @@
 オリジナルのWindowsバージョンについては、[特設ページ](http://amamoriya.gozaru.jp/i)をご覧ください。
 
 遊ぶには [Arduboy](https://www.arduboy.com/) が必要です。
-しかし、他の [Arduino](https://www.arduino.cc/) ハードウェアでも工夫すれば動くかもしれません。(ソースコードの改造が必要です。)
+しかし、他の [Arduino](https://www.arduino.cc/) ハードウェアでも工夫すれば動くかもしれません。(ソースコードの改造が必要です。[詳細](#other_hardwares))
 
 [English document is here](./README.md).
 
@@ -53,7 +53,7 @@
 
 ほか、各キャラクタの最大数や、残機数等の自機設定も可能です。
 
-## 他のArduino環境で動作させるためには
+## <a name="other_hardwares">他のArduino環境で動作させるためには
 
 Arduino から映像を出力する手段として、グラフィック液晶を使う、簡単な回路を作ってコンポジット出力する等があります。
 
@@ -81,11 +81,11 @@ i4arduboy は、```gamecore.h```の```GameCore```構造体のメンバ関数や�
 * ```void setCursor(int x, int y)``` - 文字列描画の左上位置を設定する。
 * ```void print(char* text)``` - ```setCursor```で指定した位置に文字列を描画する。
 * ```bool playing()``` - 楽譜データ演奏中ならば```true```を返す。
-* ```void playScore(const byte* score)``` - PROGMEMに配置された```byte```配列の楽譜データを再生する。フォーマットは miditones によって出力されるものと同一である。
+* ```void playScore(const byte* score)``` - PROGMEMに配置された```byte```配列の楽譜データを再生する。フォーマットは [miditones](https://github.com/LenShustek/miditones) によって出力されるものと同一である。
 * ```void stopScore()``` - 楽譜データ演奏中ならばそれを停止する。
 * ```void tone(unsigned int f, unsigned long d)``` - 周波数 f のビープを d[ms] 発声。
 
-映像出力ライブラリの候補としては ArduinoPlayground/[Output](http://playground.arduino.cc/Main/InterfacingWithHardware#Output) の LCDs や Video Output を参考にすると良いでしょう。
+映像出力ライブラリの候補としては [ArduinoPlayground/Output](http://playground.arduino.cc/Main/InterfacingWithHardware#Output) の LCDs や Video Output を参考にすると良いでしょう。
 
 ## 技術情報
 
