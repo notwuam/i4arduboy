@@ -17,7 +17,7 @@ struct GameCore {
   bool soundOn = true;
   
   void setup() {
-    arduboy.start();
+    arduboy.beginNoLogo();
     arduboy.setFrameRate(60);
     nowInput  = 0x00;
     prevInput = 0xff;
