@@ -172,7 +172,6 @@ void BigEnemy::initialize(const char y) {
 
 void BigEnemy::move(GameLevel& context) {
   // moving
-  static const float NORMAL_SPD = -0.2f;
   if(grazed() && x > SCREEN_WIDTH - 5) {
     x += -3; // submarine found
   }
