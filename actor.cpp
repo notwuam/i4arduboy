@@ -112,7 +112,7 @@ bool Torpedo::launch(const char x, const char y) {
   return false;
 }
 
-void Torpedo::move(GameLevel& context) {
+void Torpedo::move() {
   static const fixed ACC = 1 << 7;  // 0.5
   if(!exist()) { return; }
   vx += ACC - (vx >> 4);

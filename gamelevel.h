@@ -105,7 +105,7 @@ struct GameLevel {
     // === move ===
     submarine.move(*this);
     echo.reset(*this, submarine.fieldX());
-    torpedo.move(*this);
+    torpedo.move();
     moveCharacters<AutoShot>(autoShots, AUTO_SHOT_MAX);
     moveCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     moveCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
