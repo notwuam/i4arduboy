@@ -128,7 +128,6 @@ void Torpedo::draw(GameLevel& context) const {
   context.core.drawBitmap(x, y - 1, bitmapTorpedo, 2);
   // shockwave
   if(vx > 4 << 8) { // well accelerated
-    const byte w = bitmapShockwave0[0];
     const byte h = bitmapShockwave0[1];
     context.core.drawBitmap(x -  8, y - h/2, bitmapShockwave0, 2);
     context.core.drawBitmap(x - 16, y - h/2, bitmapShockwave1, 2);
