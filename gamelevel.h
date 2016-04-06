@@ -7,6 +7,8 @@
 #include "modules.h"
 #include "assets.h"
 
+#define INDEX_NOT_FOUND (255)
+
 struct Submarine;
 struct Torpedo;
 
@@ -268,7 +270,6 @@ struct GameLevel {
     const float ty = submarine.y * (1.f/256);  // ToY
     const float vx = tx - prevSubmarineX;      // VelocityX (of submarine)
     const float vy = ty - prevSubmarineY;      // VelocityY
-    const float dr = atan2(ty - fy, tx - fx);  // DiRection (to submarine)
     
     const float ds = (tx - fx) * (tx - fx) + (ty - fy) * (ty - fy); // SquareDistance
     const float rt = sqrt(ds) / bs;            // ReachTime
@@ -285,36 +286,36 @@ struct GameLevel {
     }
   }
   void fireAutoShot(const char x, const char y) {
-    const char i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
-    if(i >= 0) {
+    const byte i = searchAvailableIndex<AutoShot>(autoShots, AUTO_SHOT_MAX);
+    if(i != INDEX_NOT_FOUND) {
       autoShots[i].initialize(x, y);
     }
   }
   void spawnBigEnemy(const char y) {
-    const char i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
-    if(i >= 0) {
+    const byte i = searchAvailableIndex<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
+    if(i != INDEX_NOT_FOUND) {
       bigEnemies[i].initialize(y);
     }
   }
   bool spawnSmallEnemy(const char y, const byte type) {
-    const char i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
-    if(i >= 0) {
+    const byte i = searchAvailableIndex<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
+    if(i != INDEX_NOT_FOUND) {
       smallEnemies[i].initialize(y, type);
       return false;  // successfully
     }
     return true; // error
   }
   void fireBullet(const char x, const char y, const float radian, const byte type) {
-    const char i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
-    if(i >= 0) {
+    const byte i = searchAvailableIndex<Bullet>(bullets, BULLET_MAX);
+    if(i != INDEX_NOT_FOUND) {
       bullets[i].initialize(x, y, radian, type);
     }
   }
   void spawnParticle(const int x, const char y, const byte type) {
     // this function can not be inline
     if(x > SCREEN_WIDTH || y > SCREEN_HEIGHT) { return; }
-    const char i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
-    if(i >= 0) {
+    const byte i = searchAvailableIndex<Particle>(particles, PARTICLE_MAX);
+    if(i != INDEX_NOT_FOUND) {
       particles[i].activate(x, y);
       particles[i].type = type;
       switch(type) {
@@ -340,11 +341,11 @@ struct GameLevel {
       if(pool[i].exist()) { pool[i].draw(*this); }
     }
   }
-  template<typename T> inline char searchAvailableIndex(const T pool[], const byte n) const {
+  template<typename T> inline byte searchAvailableIndex(const T pool[], const byte n) const {
     for(byte i = 0; i < n; ++i) {
       if(!pool[i].exist()) { return i; }
     }
-    return -1;  // not found
+    return INDEX_NOT_FOUND;  // not found
   }
   
   private:
