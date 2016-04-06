@@ -15,7 +15,7 @@ Or you have an [Arduino](https://www.arduino.cc/) board and modify a source code
 ## How to install
 
 1. Install [ArduinoIDE](https://www.arduino.cc/en/Main/Software).
-2. Download [ArduboyLib](https://github.com/Arduboy/Arduboy) and install ([more details](https://github.com/Arduboy/Arduboy#how-to-use-the-library)).
+2. Download [ArduboyLib](https://github.com/Arduboy/Arduboy) and install.
 3. Clone or Download this repository. If you download the ZIP, extract it.
 4. Connect your Arduboy to a PC with a USB cable.
 5. Open "i4arduboy.ino" with ArduinoIDE.

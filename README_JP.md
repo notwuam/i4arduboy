@@ -15,7 +15,7 @@
 ## インストール方法
 
 1. [ArduinoIDE](https://www.arduino.cc/en/Main/Software) をインストール
-2. [ArduboyLib](https://github.com/Arduboy/Arduboy) をダウンロードし、先ほどのArduino環境に導入 ([詳細](https://github.com/Arduboy/Arduboy#how-to-use-the-library))
+2. [ArduboyLib](https://github.com/Arduboy/Arduboy) をダウンロードし、先ほどのArduino環境に導入
 3. このリポジトリを clone かダウンロード (ZIPダウンロードの場合は展開してください)
 4. Arduboy をUSBケーブルで接続
 5. "i4arduboy.ino" を ArduinoIDE で開く
