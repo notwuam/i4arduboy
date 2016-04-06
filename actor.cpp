@@ -367,7 +367,7 @@ void Bullet::initialize(const char x, const char y, const float radian, const by
   vy = round(sin(radian) * speed / (1.f / 256));
 }
 
-void Bullet::move(GameLevel& context) {
+void Bullet::move() {
   x += vx;
   y += vy;
 
@@ -404,7 +404,7 @@ void Bullet::onHit(GameLevel& context) {
 
 // === Particle ===
 
-void Particle::move(GameLevel& context) {
+void Particle::move() {
   --limit;
   if(limit <= 0) {
     inactivate();

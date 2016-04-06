@@ -106,13 +106,11 @@ struct GameLevel {
     submarine.move(*this);
     echo.reset(*this, submarine.fieldX());
     torpedo.move();
-    for(byte i = 0; i < AUTO_SHOT_MAX; ++i) {
-      if(autoShots[i].exist()) { autoShots[i].move(); }
-    }
+    moveCharactersWithoutContext<AutoShot>(autoShots, AUTO_SHOT_MAX);
     moveCharacters<BigEnemy>(bigEnemies, BIG_ENEMY_MAX);
     moveCharacters<SmallEnemy>(smallEnemies, SMALL_ENEMY_MAX);
-    moveCharacters<Bullet>(bullets, BULLET_MAX);
-    moveCharacters<Particle>(particles, PARTICLE_MAX);
+    moveCharactersWithoutContext<Bullet>(bullets, BULLET_MAX);
+    moveCharactersWithoutContext<Particle>(particles, PARTICLE_MAX);
 
     // === hittest ===
     // BigEnemy vs Torpedo
@@ -336,6 +334,11 @@ struct GameLevel {
   template<typename T> inline void moveCharacters(T pool[], const byte n) {
     for(byte i = 0; i < n; ++i) {
       if(pool[i].exist()) { pool[i].move(*this); }
+    }
+  }
+  template<typename T> inline void moveCharactersWithoutContext(T pool[], const byte n) {
+    for(byte i = 0; i < n; ++i) {
+      if(pool[i].exist()) { pool[i].move(); }
     }
   }
   template<typename T> inline void drawCharacters(T pool[], const byte n) {

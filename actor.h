@@ -139,7 +139,7 @@ struct Bullet {
   inline void inactivate() { x = FIXED_EXIST_THRESHOLD; }
   inline bool exist() const { return x > FIXED_EXIST_THRESHOLD; }
   void initialize(const char x, const char y, const float radian, const byte type);
-  void move(GameLevel& context);
+  void move();
   void draw(GameLevel& context) const;
   void onHit(GameLevel& context);
 };
@@ -156,7 +156,7 @@ struct Particle {
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   //void initialize(const char x, char float y, const byte type); // in order to reduce memory
-  void move(GameLevel& context);
+  void move();
   void draw(GameLevel& context) const;
 };
 
