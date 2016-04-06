@@ -57,7 +57,7 @@ struct GameCore {
   // === arduboy delegation ===
   // if you build for another hardware, please implement these functions
   inline bool nextFrame() { return arduboy.nextFrame(); }
-  inline void clearDisplay() { arduboy.clearDisplay(); }
+  inline void clear() { arduboy.clear(); }
   inline void display() { arduboy.display(); }
   inline int frameCount() { return arduboy.frameCount; }
   //inline bool pressed(byte button) { return arduboy.pressed(button); }
