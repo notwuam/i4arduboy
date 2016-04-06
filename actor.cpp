@@ -145,7 +145,7 @@ void AutoShot::initialize(const char x, const char y) {
   this->y = y;
 }
 
-void AutoShot::move(GameLevel& context) {
+void AutoShot::move() {
   // moving
   x += 8;
 

@@ -73,7 +73,7 @@ struct AutoShot {
   inline void inactivate() { x = EXIST_THRESHOLD; }
   inline bool exist() const { return x > EXIST_THRESHOLD; }
   void initialize(const char x, const char y);
-  void move(GameLevel& context);
+  void move();
   void draw(GameLevel& context) const;
   void onHit() { inactivate(); }
 };
