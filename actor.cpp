@@ -149,7 +149,7 @@ void AutoShot::move() {
   x += 8;
 
   // frame out
-  if(x > SCREEN_WIDTH) {
+  if((byte)x > SCREEN_WIDTH) {
     inactivate();
   }
 }
@@ -374,8 +374,8 @@ void Bullet::move() {
   // frame out
   static const char MARGIN = 4;
   if(
-    fieldX() < -MARGIN || fieldX() > SCREEN_WIDTH  + MARGIN ||
-    fieldY() < -MARGIN || fieldY() > SCREEN_HEIGHT + MARGIN
+    fieldX() < -MARGIN || (byte)fieldX() > SCREEN_WIDTH  + MARGIN ||
+    fieldY() < -MARGIN || (byte)fieldY() > SCREEN_HEIGHT + MARGIN
   ) {
     inactivate();  
   }
