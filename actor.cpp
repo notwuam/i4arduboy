@@ -49,9 +49,9 @@ void Submarine::move(GameLevel& context) {
   }
 
   // clamping into field
-  static const fixed MARGIN = 6 << 8;
-  x = Clamp(x, 0, (SCREEN_WIDTH << 8) - MARGIN);
-  y = Clamp(y, MARGIN - (H << 8), (SCREEN_HEIGHT << 8) - MARGIN);
+  static const fixed MARGIN = 6;
+  x = Clamp(x, 0, (SCREEN_WIDTH - MARGIN) << 8);
+  y = Clamp(y, (MARGIN - H) << 8, (SCREEN_HEIGHT - MARGIN) << 8);
 
   // launching torpedo
   if(extraLives >= 0 && (context.core.pushed(BTN_A) || context.core.pushed(BTN_B))) {
