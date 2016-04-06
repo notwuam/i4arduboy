@@ -79,7 +79,7 @@ struct Ranking {
     const byte rank = getRank(score);
     if(rank >= RANKING_ENTRY_MAX) { return; }
     // slide entry
-    for(char i = RANKING_ENTRY_MAX - 2; i >= rank; --i) {
+    for(byte i = RANKING_ENTRY_MAX - 2; i >= rank; --i) {
       scores[i+1] = scores[i];
       names[(i+1)*RANKING_NAME_LEN  ] = names[i*RANKING_NAME_LEN  ];
       names[(i+1)*RANKING_NAME_LEN+1] = names[i*RANKING_NAME_LEN+1];
