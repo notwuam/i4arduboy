@@ -18,7 +18,6 @@ struct GameCore {
   
   void setup() {
     arduboy.beginNoLogo();
-    arduboy.setFrameRate(60);
     nowInput  = 0x00;
     prevInput = 0xff;
   }
