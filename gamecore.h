@@ -67,9 +67,6 @@ struct GameCore {
   inline void fillRect(int x, int y, byte w, byte h, byte c) {
     arduboy.fillRect(x + qx, y + qy, w, h, c);
   }
-  inline void drawCircle(int x, int y, byte r, byte c) {
-    arduboy.drawCircle(x + qx, y + qy, r, c);
-  }
   inline void setCursor(int x, int y) { arduboy.setCursor(x, y); }
   inline void print(const char* text) { arduboy.print(text); }
   inline bool playing() { return arduboy.tunes.playing(); }

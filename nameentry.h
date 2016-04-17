@@ -86,7 +86,7 @@ struct NameEntry {
       core.drawBitmap(9 * W + BX, 3 * H + BY, bitmapOk, 1);
       // cursor
       if(exitCount < 0) {
-        core.drawCircle(kbCursor % COLUMN * W + BX + 2, kbCursor / COLUMN * H + BY + 3, 5, 1);
+        core.drawBitmap(kbCursor % COLUMN * W + BX + 2 - bitmapCircle[0]/2, kbCursor / COLUMN * H + BY + 3 - bitmapCircle[1]/2, bitmapCircle, 2);
       }
     }
     // entry

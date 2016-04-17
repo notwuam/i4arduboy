@@ -397,7 +397,7 @@ void Bullet::draw(GameLevel& context) const {
 }
 
 void Bullet::onHit(GameLevel& context) {
-  context.core.drawCircle(fieldX(), fieldY(), 6, 1);
+  context.core.drawBitmap(fieldX() - bitmapCircle[0]/2, fieldY() - bitmapCircle[1]/2, bitmapCircle, 2);
   inactivate();
 }
 
