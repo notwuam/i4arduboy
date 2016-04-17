@@ -64,10 +64,10 @@ struct GameCore {
   inline void drawBitmap(int x, int y, const byte* bitmap, byte c) {
     arduboy.drawBitmap(x + qx, y + qy, bitmap+2, pgm_read_byte(bitmap), pgm_read_byte(bitmap+1), c);
   }
-  inline void fillRect(int x, int y, int w, int h, byte c) {
+  inline void fillRect(int x, int y, byte w, byte h, byte c) {
     arduboy.fillRect(x + qx, y + qy, w, h, c);
   }
-  inline void drawCircle(int x, int y, int r, byte c) {
+  inline void drawCircle(int x, int y, byte r, byte c) {
     arduboy.drawCircle(x + qx, y + qy, r, c);
   }
   inline void setCursor(int x, int y) { arduboy.setCursor(x, y); }
