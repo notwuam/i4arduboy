@@ -397,7 +397,9 @@ void Bullet::draw(GameLevel& context) const {
 }
 
 void Bullet::onHit(GameLevel& context) {
+#ifndef LOW_FLASH_MEMORY
   context.core.drawBitmap(fieldX() - bitmapCircle[0]/2, fieldY() - bitmapCircle[1]/2, bitmapCircle, 2);
+#endif
   inactivate();
 }
 

@@ -65,7 +65,7 @@ struct NameEntry {
       static const byte W  = 10;
       static const byte H  = 12;
       static const byte BX = (SCREEN_WIDTH - (W * (COLUMN - 1) + 6)) / 2;
-      static const byte BY = 20;
+      static const byte BY = 19;
       // number
       for(char i = 0; i < 10; ++i) {
         text[0] = '0' + i;
@@ -86,7 +86,11 @@ struct NameEntry {
       core.drawBitmap(9 * W + BX, 3 * H + BY, bitmapOk, 1);
       // cursor
       if(exitCount < 0) {
+#ifndef LOW_FLASH_MEMORY
         core.drawBitmap(kbCursor % COLUMN * W + BX + 2 - bitmapCircle[0]/2, kbCursor / COLUMN * H + BY + 3 - bitmapCircle[1]/2, bitmapCircle, 2);
+#else
+        core.fillRect(kbCursor % COLUMN * W + BX, kbCursor / COLUMN * H + BY + 8, 5, 1, 1);
+#endif
       }
     }
     // entry

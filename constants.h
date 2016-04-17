@@ -9,7 +9,7 @@
 //#define LOW_FLASH_MEMORY
 
 // define if use EEPROM for saving ranking data
-//#define USE_RANKING_EEPROM
+#define USE_RANKING_EEPROM
 
 // define if disable BGM (you dont need / reduce flash memory)
 //#define DISABLE_MUSIC
