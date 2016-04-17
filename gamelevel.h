@@ -280,7 +280,7 @@ struct GameLevel {
   }
 
   // spawn characters
-  void launchTorpedo(const char x, const char y) {
+  void launchTorpedo(const int x, const char y) {
     if(torpedo.launch(x, y)) {
       core.tone(440, 50);
     }

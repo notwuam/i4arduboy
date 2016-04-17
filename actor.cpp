@@ -55,7 +55,7 @@ void Submarine::move(GameLevel& context) {
 
   // launching torpedo
   if(extraLives >= 0 && (context.core.pushed(BTN_A) || context.core.pushed(BTN_B))) {
-    context.launchTorpedo(fieldX() + 10, fieldY() + 1);
+    context.launchTorpedo((int)fieldX() + 10, fieldY() + 1);
   }
 
   //firing auto shot
@@ -102,7 +102,7 @@ void Submarine::onHit(GameLevel& context) {
 
 // === Torpedo ===
 
-bool Torpedo::launch(const char x, const char y) {
+bool Torpedo::launch(const int x, const char y) {
   if(!exist()) {
     this->x = x;
     this->y = y;
